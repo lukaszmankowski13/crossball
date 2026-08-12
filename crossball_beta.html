@@ -151,7 +151,7 @@ function render(){
  }
  document.getElementById("rosters").innerHTML=Object.values(teams).map(t=>`<div><h3>${t.name}</h3>${t.players.map(p=>`<div class="player"><div class="pname">${p[0]}</div><div class="meta">${p[1]} · OVR ${p[2]}</div></div>`).join("")}</div>`).join("");
 }
-function startMatch(){run()}\ndocument.getElementById("reset").onclick=()=>{clearInterval(timer);reset()};
+function startMatch(){run()}document.getElementById("reset").onclick=()=>{clearInterval(timer);reset()};
 document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>{document.querySelectorAll(".tab").forEach(y=>y.classList.remove("active"));x.classList.add("active");render()});
 reset();
 </script>
