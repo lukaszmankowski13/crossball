@@ -70,8 +70,11 @@ players:[
 ["Leon Bauer","NAP",87,{shot:91,body:84,hold:86,speed:84,pass:77,press:91}]
 ]}};
 
-let state, timer;
+let state, timer, halfTimer;
 function reset(){
+  clearInterval(timer);
+
+ clearTimeout(halfTimer)
  state={a:0,b:0,minute:0,events:[],shots:[0,0],on:[true,true],fouls:[0,0],pen:[0,0],stats:{},running:false};
  for(const t of Object.values(teams)) for(const p of t.players) state.stats[p[0]]={goals:0,assists:0,shots:0,fouls:0,rating:6+Math.random()*.7};
  render();
@@ -129,14 +132,77 @@ function simAction(){
  addEvent(state.minute,desc);
 }
 function run(){
+
  if(state.running)return;
- state.running=true; document.getElementById("sim").disabled=true;
+
+ state.running=true;
+
+ document.getElementById("sim").disabled=true;
+
  let n=0;
+
  timer=setInterval(()=>{
-   if(n>=115){clearInterval(timer);state.running=false;document.getElementById("sim").disabled=false;addEvent(40,"<b>KONIEC MECZU</b>");render();return}
-   n++; state.minute=Math.min(40,Math.floor(n/3)+1);
-   simAction(); render();
- },45);
+
+   n++;
+
+   state.minute=n;
+
+   simAction();
+
+   render();
+
+   if(n===20){
+
+     clearInterval(timer);
+
+     state.running=false;
+
+     addEvent(20,"<b>⏸ KONIEC 1. POŁOWY — PRZERWA</b>");
+
+     document.getElementById("clock").textContent="PRZERWA";
+
+     render();
+
+     halfTimer=setTimeout(()=>{
+
+       addEvent(20,"<b>▶ ROZPOCZYNA SIĘ 2. POŁOWA</b>");
+
+       state.running=true;
+
+       render();
+
+       timer=setInterval(()=>{
+
+         n++;
+
+         state.minute=n;
+
+         simAction();
+
+         render();
+
+         if(n>=40){
+
+           clearInterval(timer);
+
+           state.running=false;
+
+           document.getElementById("sim").disabled=false;
+
+           addEvent(40,"<b>🏁 KONIEC MECZU</b>");
+
+           render();
+
+         }
+
+       },1000);
+
+     },3000);
+
+   }
+
+ },1000);
+
 }
 function render(){
  document.getElementById("score").textContent=`${state.a} : ${state.b}`;
