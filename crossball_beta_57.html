@@ -1,0 +1,898 @@
+<!doctype html><html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Crossball Beta 0.3</title><style>
+:root{--bg:#0b1020;--p:#121a2d;--p2:#18233a;--t:#eef3ff;--m:#9aa8c2;--a:#42d3ff;--g:#43d17a;--y:#ffcf5c;--l:#263553}*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#080c17,#10182b);color:var(--t);font:15px system-ui}header{padding:22px 18px;border-bottom:1px solid var(--l);background:#0c1324}main{max-width:1100px;margin:24px auto;padding:0 18px}.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.card{background:var(--p);border:1px solid var(--l);border-radius:16px;padding:18px}.match{display:grid;grid-template-columns:1fr auto 1fr;text-align:center;align-items:center;gap:12px}.team{font-size:22px;font-weight:800}.score{font-size:46px;font-weight:900}.muted,.small{color:var(--m);font-size:13px}.actions,.tabs{display:flex;gap:8px;justify-content:center;margin:18px 0;flex-wrap:wrap}button,.tab{border:0;border-radius:10px;padding:11px 16px;background:var(--a);font-weight:800;cursor:pointer}.tab{background:var(--p2);color:var(--m);border-radius:999px}.tab.active{background:var(--a);color:#06101a}button:disabled{opacity:.45}.feed{height:420px;overflow:auto}#content{overflow-x:auto}.event{padding:9px;border-bottom:1px solid var(--l);display:flex;gap:10px}.min{width:42px;color:var(--a);font-weight:800}.goal{color:var(--g);font-weight:800}.pen{color:var(--y);font-weight:800}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:8px;border-bottom:1px solid var(--l)}th{color:var(--m);font-size:12px}.rosters{display:grid;grid-template-columns:1fr 1fr;gap:12px}.player{padding:7px 0;border-bottom:1px solid var(--l)}@media(max-width:800px){.grid{grid-template-columns:1fr}.team{font-size:17px}.score{font-size:38px}}
+</style></head><body><header><b style="font-size:28px;letter-spacing:.08em">CROSS<span style="color:var(--a)">BALL</span></b><div class="muted">World — Beta 5.7</div></header><main><div class="grid"><section class="card"><div class="small">TESTOWY MECZ · 2 × 20 MIN · 6 NA 6</div><div class="match"><div>🇵🇱<div class="team">Warsaw Warriors</div><div class="muted">siła 84</div></div><div><div id="score" class="score">0 : 0</div><div id="goalfeed" class="small" style="margin-top:8px;line-height:1.55"></div><div id="clock" class="muted">Gotowy</div></div><div>🇩🇪<div class="team">Berlin Blades</div><div class="muted">siła 82</div></div></div><div class="actions"><button id="sim">▶ Symuluj mecz</button><button id="reset">↻ Reset</button></div><div class="tabs"><div class="tab active" data-t="live">Przebieg</div><div class="tab" data-t="stats">Statystyki</div><div class="tab" data-t="ratings">Oceny</div><div class="tab" data-t="minutes">Minuty</div></div><div id="content"></div></section><section class="card"><h2>Składy</h2><div class="small">Minuty i oceny są prezentowane osobno dla każdej drużyny.</div><div class="small" style="margin-top:4px">Minuty nie są po meczu sztucznie dopasowywane — tabela pokazuje wartości zapisane przez silnik.</div><div class="rosters" id="rosters"></div><hr style="border:0;border-top:1px solid var(--l);margin:18px 0"><div class="small">12 zawodników: 2 BR, 4 OB, 4 SKR, 2 NAP. Zmiany zależą od formy, zmęczenia, wyniku i taktyki. Kara daje realne 5 na 6; gol podczas kary kończy osłabienie. Druga kara kończy udział zawodnika.</div></section></div></main><script>
+const T={war:{name:"Warsaw Warriors",flag:"🇵🇱",p:[
+["Kacper Zieliński","BR",86,{save:91,pass:76}],["Michał Wrona","OB",85,{def:91,pass:72,long:84,shot:65}],["Jan Mazur","OB",82,{def:78,pass:90,long:92,shot:78}],["Adam Nowak","SKR",88,{speed:94,dribble:88,cross:90,shot:82,pass:78}],["Piotr Lis","SKR",81,{speed:82,dribble:91,cross:79,shot:85,pass:86}],["Jakub Kowalski","NAP",89,{shot:93,body:92,hold:91,speed:73,pass:80}],["Paweł Walczak","OB",77,{def:74,pass:75,long:68,shot:58}],["Tomasz Góralczyk","OB",79,{def:81,pass:73,long:70,shot:62}],["Marcin Baran","SKR",80,{speed:86,dribble:79,cross:81,shot:75,pass:77}],["Krzysztof Krajewski","SKR",78,{speed:80,dribble:84,cross:76,shot:77,pass:82}],["Mateusz Schulze","NAP",76,{shot:79,body:80,hold:77,speed:78,pass:74}],["Bartosz Ślusarczyk","BR",72,{save:76,pass:69}]]},
+ber:{name:"Berlin Blades",flag:"🇩🇪",p:[
+["Felix Weber","BR",84,{save:88,pass:88}],["Lukas Schmidt","OB",88,{def:94,pass:78,long:82,shot:72}],["Jonas Keller","OB",80,{def:75,pass:88,long:86,shot:81}],["Max Müller","SKR",86,{speed:90,dribble:82,cross:87,shot:84,pass:75}],["Tim Fischer","SKR",84,{speed:85,dribble:89,cross:82,shot:79,pass:84}],["Leon Bauer","NAP",87,{shot:91,body:84,hold:86,speed:84,pass:77}],["Felix Weber II","BR",72,{save:75,pass:70}],["Stefan König","OB",79,{def:80,pass:76,long:73,shot:61}],["Paul Richter","OB",77,{def:75,pass:79,long:78,shot:66}],["Nico Hartmann","SKR",80,{speed:84,dribble:82,cross:79,shot:76,pass:80}],["Daniel Vogel","SKR",78,{speed:81,dribble:86,cross:75,shot:74,pass:82}],["Moritz Schulz","NAP",78,{shot:82,body:78,hold:81,speed:80,pass:76}]]}};
+let S,timer,halfTimer,tab="live";
+const $=id=>document.getElementById(id),all=k=>T[k].p,nm=n=>Object.values(T).flatMap(t=>t.p).find(p=>p[0]===n),role=n=>nm(n)[1],team=n=>Object.keys(T).find(k=>all(k).some(p=>p[0]===n)),power=k=>all(k).reduce((s,p)=>s+p[2],0)/12;
+function reset(){clearInterval(timer);clearTimeout(halfTimer);S={min:0,a:0,b:0,goals:[],finished:false,ev:[],shots:[0,0],xg:[0,0],fouls:[0,0],pens:[0,0],run:false,tm:{},penalty:{war:null,ber:null},bench:{war:[],ber:[]},penaltyChance:false,penaltyAwarded:false,matchCount:0};for(const k of["war","ber"]){let p=all(k),field=p.filter(x=>x[1]!=="BR").slice(0,5),br=p.find(x=>x[1]=="BR");S.tm[k]=[br[0],...field.map(x=>x[0])];S.bench[k]=p.filter(x=>!S.tm[k].includes(x[0])).map(x=>x[0]);p.forEach(x=>S.tm[x[0]]={g:0,a:0,sh:0,x:0,r:6.4+Math.random()*.6,m:0,f:0,out:false,pass:0,passA:0,key:0,dr:0,drA:0,tack:0,inter:0,duel:0,duelW:0,turn:0,cross:0,crossA:0,saves:0})}render()}
+function pick(k,roles,active=true){let a=(active?S.tm[k]:all(k).map(p=>p[0])).filter(n=>roles.includes(role(n)));return a.length?nm(a[Math.floor(Math.random()*a.length)]):null}
+function add(text){S.ev.unshift({m:S.min,t:text})}function adj(n,v){S.tm[n].r=Math.max(4.5,Math.min(10,S.tm[n].r+v))}
+function penalty(k,p){
+  S.penaltyAwarded=true;
+  let s=S.tm[p];
+  s.f++;
+  S.fouls[k=="war"?0:1]++;
+
+  let second=s.f>1 && Math.random()<.30;
+  if(second){
+    s.out=true;
+    S.tm[k]=S.tm[k].filter(n=>n!==p);
+    S.bench[k]=S.bench[k].filter(n=>n!==p);
+    add(`<span class="pen">🟨🟨 ${p} — DRUGA KARA, wykluczenie.</span>`);
+  }else{
+    add(`<span class="pen">🟨 ${p} — KARA 1 MIN. ${T[k].name} gra w osłabieniu.</span>`);
+  }
+
+  S.pens[k=="war"?0:1]++;
+  S.penalty[k]={p:p,end:S.min+1};
+
+  // Rzut karny dla rywala. Skuteczność ~70%, z lekkim wpływem
+  // wykonującego i bramkarza.
+  const takers=S.tm[k=="war"?"ber":"war"].filter(n=>role(n)!="BR");
+  const taker=takers.length?takers[Math.floor(Math.random()*takers.length)]:null;
+  if(taker){
+    const atk=k=="war"?"ber":"war";
+    const keeper=pick(k,["BR"]);
+    const finish=(nm(taker)[3].shot||70)/100;
+    const save=keeper?(nm(keeper)[3].save||80)/100:.8;
+    const prob=Math.max(.52,Math.min(.88,.70+(finish-.7)*.22-(save-.8)*.18));
+
+    if(Math.random()<prob){
+      add(`<span class="pen">🎯 RZUT KARNY — ${taker} wykorzystuje!</span>`);
+      goal(atk,taker,"penalty");
+    }else{
+      add(`<span class="pen">❌ RZUT KARNY — ${taker} nie wykorzystuje.</span>`);
+      if(keeper)adj(keeper,.10);
+    }
+  }
+}
+
+
+function endPen(k,why=""){if(S.penalty[k]){S.penalty[k]=null;add(`🔓 ${T[k].name} wraca do kompletu${why?" — "+why:""}.`)}}
+function sub(k,old,reason){let r=role(old),c=S.bench[k].filter(n=>role(n)==r);if(!c.length)return;let best=c.sort((a,b)=>nm(b)[2]-nm(a)[2])[0];S.tm[k]=S.tm[k].filter(n=>n!==old);S.tm[k].push(best);S.bench[k]=S.bench[k].filter(n=>n!==best);S.bench[k].push(old);S.tm[old].m=Math.min(40,S.tm[old].m); S.tm[best].m=Math.min(40,S.tm[best].m); if(S.tm[best].m>0)S.tm[best].m=0; add(`🔄 ZMIANA — ${old} schodzi (${reason}). Wchodzi ${best}.`)}
+function changes(k){
+ if(S.penalty[k]||S.min<4)return;
+ for(const n of S.tm[k].slice()){
+  if(role(n)=="BR")continue;
+  let q=S.tm[n].r,ch=(q<5.9?.25:q<6.2?.12:0)+(S.tm[n].m>28?.18:0)+(role(n)=="SKR"?.04:0);
+  if(S.tm[n].f>0)ch+=.05;
+  if(Math.random()<ch){sub(k,n,q<6.1?"słaba gra":S.tm[n].f>0?"ostrożność po karze":"zmęczenie");return}
+ }
+ let d=k=="war"?S.a-S.b:S.b-S.a;
+ if(d<=-2&&Math.random()<.1){
+  let c=S.bench[k].filter(n=>role(n)!="BR");
+  if(c.length){let r=c[Math.floor(Math.random()*c.length)],old=S.tm[k].find(n=>role(n)==role(r)&&S.tm[n].m>8);if(old)sub(k,old,"reakcja trenera na wynik")}
+ }
+ if(d>=2&&Math.random()<.07){
+  let c=S.bench[k].filter(n=>role(n)=="OB"||role(n)=="SKR");
+  if(c.length){let r=c[Math.floor(Math.random()*c.length)],old=S.tm[k].find(n=>role(n)==role(r)&&S.tm[n].m>8);if(old)sub(k,old,"zabezpieczenie prowadzenia")}
+}
+}
+function xg(sh,kind){
+  const p=nm(sh), a=p[3];
+  // Hockey-like shot quality on a 40-minute match: most attempts are
+  // low-value, with only a small number of dangerous chances.
+  let x=role(sh)=="OB"?.012:role(sh)=="SKR"?.028:.055;
+
+  if(kind=="cross")x+=.018;
+  if(kind=="through")x+=.045;
+  if(kind=="long")x-=.006;
+  if(kind=="counter")x+=.028;
+
+  x+=((a.shot||70)-70)*.0004;
+  x*=.90+Math.random()*.20;
+
+  return Math.max(.006,Math.min(.20,x));
+}
+
+function goal(k,sh,kind){
+  const i=k=="war"?0:1;
+  if(k=="war")S.a++;else S.b++;
+  if(S.tm[sh]){
+    S.tm[sh].g++;
+    adj(sh,.55);
+  }
+
+  let as=null;
+  // Assists are less likely on penalties and long-range defensive goals.
+  if(kind!=="penalty" && Math.random()<.62){
+    const candidates=S.tm[k].filter(n=>n!==sh && role(n)!="BR");
+    if(candidates.length) as=candidates[Math.floor(Math.random()*candidates.length)];
+  }
+  if(as && S.tm[as]){
+    S.tm[as].a++;
+    adj(as,.18);
+  }
+
+  S.goals=S.goals||[];
+  S.goals.push({min:S.min,team:k,scorer:sh,assist:as,penalty:kind==="penalty"});
+  add(`<span class="goal">⚽ GOL! ${S.a}:${S.b} — ${sh}</span>${as?` <span class="small">asysta: ${as}</span>`:""}`);
+  if(S.penalty[k=="war"?"ber":"war"])
+    endPen(k=="war"?"ber":"war","gol podczas przewagi");
+}
+
+function shot(k,sh,kind){
+  let i=k=="war"?0:1,x=xg(sh,kind);
+  S.shots[i]++;S.xg[i]+=x;S.tm[sh].sh++;S.tm[sh].x+=x;
+
+  let br=pick(k=="war"?"ber":"war",["BR"]);
+  let onTarget=Math.random()<(.45+(x*.45));
+  if(onTarget)S.on[i]++;
+
+  const p=nm(sh);
+  let finishing=(p[3].shot||70)/100;
+  let save=br?((br[3].save||80)/100):.80;
+
+  // Team quality matters, but not enough to make outcomes deterministic.
+  const teamQ=power(k);
+  const oppQ=power(k=="war"?"ber":"war");
+  const qualityEdge=Math.max(-.12,Math.min(.12,(teamQ-oppQ)*.018));
+
+  let advantage=S.penalty[k=="war"?"ber":"war"]?.25:0;
+  let prob=0.135 + x*(1.20+.45*finishing)
+           + qualityEdge + advantage - .030*(save-.8);
+
+  if(kind=="through" || kind=="counter")prob+=.025;
+  if(kind=="long")prob-=.008;
+
+  prob=Math.max(.025,Math.min(.52,prob));
+
+  if(Math.random()<prob)goal(k,sh,kind);
+  else{
+    adj(sh,.02);
+    if(br)adj(br[0],onTarget?.06:.01);
+    add(`${sh} oddaje ${onTarget?"celny ":"niecelny "}strzał — ${br?br[0]+" "+(onTarget?"broni!":"nie musi interweniować."): "poza bramką."}`);
+  }
+}
+
+function passStat(n,successful=true,key=false){
+ if(!n)return;
+ S.tm[n].pass++;
+ if(successful)S.tm[n].passA++;else S.tm[n].turn++;
+ if(key)S.tm[n].key++;
+ if(successful)adj(n,.015);else adj(n,-.025);
+}
+function dribbleStat(n,successful){
+ if(!n)return;
+ S.tm[n].dr++;
+ if(successful)S.tm[n].drA++;else S.tm[n].turn++;
+ adj(n,successful?.025:-.035);
+}
+function defensiveStat(n,kind="tack"){
+ if(!n)return;
+ S.tm[n][kind]++;
+ S.tm[n].duel++;
+ if(kind=="tack")S.tm[n].duelW++;
+ adj(n,.025);
+}
+function action(){
+ let fav=power("war")/(power("war")+power("ber")),k=Math.random()<fav?"war":"ber",o=k=="war"?"ber":"war";
+ if(S.penalty[o]&&!S.penalty[k]&&Math.random()<.75)k=o;
+ let w=pick(k,["SKR"]),n=pick(k,["NAP"]),ob=pick(k,["OB"]),def=pick(o,["OB"]),r=Math.random();
+ if(!w||!n||!ob||!def)return;
+ if(r<.14){
+  let target=Math.random()<.6?w[0]:n[0],ok=Math.random()<.84;
+  passStat(ob[0],ok,false);
+  if(ok){passStat(target,true,false);add(`${ob[0]} rozgrywa od tyłu do ${target}.`)}
+  else add(`${ob[0]} próbuje podania — strata.`);
+ }else if(r<.29){
+  let ok=Math.random()<((w[3].speed+w[3].dribble+w[3].cross)/300);
+  dribbleStat(w[0],ok);
+  if(ok){
+    add(`${w[0]} rajdem przy bandzie mija rywala i dośrodkowuje.`);
+    S.tm[w[0]].cross++;
+    if(Math.random()<.7){
+      S.tm[w[0]].crossA++;passStat(w[0],true,true);
+      let sh=Math.random()<.52?n[0]:w[0];
+      shot(k,sh,"cross");
+    }
+  } else defensiveStat(def[0]);
+ }else if(r<.43){
+  let ok=Math.random()<((w[3].dribble+w[3].pass)/200);
+  dribbleStat(w[0],ok);
+  if(ok){
+    passStat(w[0],true,true);
+    add(`${w[0]} schodzi do środka i zagrywa prostopadle.`);
+    if(Math.random()<.58){
+      let sh=Math.random()<.55?w[0]:n[0];
+      shot(k,sh,"through");
+    }
+  } else defensiveStat(def[0],"inter");
+ }else if(r<.57){
+  let z=Math.random();
+  let sh=z<.45?n[0]:z<.90?w[0]:ob[0];
+  shot(k,sh,"normal");
+ }else if(r<.65){
+  shot(k,ob[0],"long");
+ }else if(r<.75){
+  passStat(n[0],true,true);S.tm[n[0]].duel++;S.tm[n[0]].duelW++;
+  add(`${n[0]} przyjmuje piłkę, zastawia się i odgrywa do ${w[0]}.`);
+  passStat(w[0],true,false);
+  if(Math.random()<.28)shot(k,w[0],"normal");
+ }else if(r<.89){
+  let duel=Math.random()<.55;
+  if(duel)defensiveStat(def[0]);
+  if(!S.penaltyAwarded && S.penaltyChance && S.penaltyMinute===S.min){
+   let second=S.tm[def[0]].f>0 && Math.random()<.055;
+   penalty(o,def[0]);
+  }else add(`${def[0]} przerywa atak odbiorem.`);
+ }else{
+  passStat(ob[0],Math.random()<.78,false);
+  add(`${ob[0]} zagrywa długą piłkę za linię obrony.`);
+  if(Math.random()<.35)shot(k,n[0],"counter");
+ }
+ changes("war");changes("ber");
+}
+
+function finishMatch(){
+  if(S.finished)return;
+  clearInterval(timer);
+  clearTimeout(halfTimer);
+  S.run=false;
+  S.finished=true;
+  S.min=40;
+  $("sim").disabled=false;
+  $("clock").textContent="KONIEC MECZU";
+  add(`🏁 <b>KONIEC MECZU — ${S.a}:${S.b}</b>`);
+  render();
+}
+
+function minute(){
+  // Naliczamy minutę tylko raz dla każdego faktycznie aktywnego zawodnika.
+  // Set zabezpiecza przed ewentualnym podwójnym wpisem zawodnika w składzie.
+  for(const k of["war","ber"]){
+    const active=[...new Set(S.tm[k])];
+    for(const n of active){
+      if(S.tm[n]) S.tm[n].m=Math.min(40,S.tm[n].m+1);
+    }
+  }
+  for(const k of["war","ber"])
+    if(S.penalty[k]&&S.min>=S.penalty[k].end)endPen(k,"koniec kary");
+  for(let i=0;i<1+Math.floor(Math.random()*2);i++)action();
+  render();
+}
+function finishMatch(){
+  clearInterval(timer);
+  clearTimeout(halfTimer);
+  S.run=false;
+  S.min=40;
+  normalizeMinutes();
+  $("clock").textContent="KONIEC MECZU";
+  $("sim").disabled=false;
+  add(`🏁 <b>KONIEC MECZU — ${S.a}:${S.b}</b>`);
+  render();
+}
+
+function allocateMinutes(k){
+  const team=T[k];
+  const groups={
+    BR:team.p.filter(p=>p[1]=="BR"),
+    OB:team.p.filter(p=>p[1]=="OB"),
+    SKR:team.p.filter(p=>p[1]=="SKR"),
+    NAP:team.p.filter(p=>p[1]=="NAP")
+  };
+  const target={BR:40,OB:80,SKR:80,NAP:40};
+  const quality=p=>p?p[2]:70;
+
+  // More active bench usage. The number of substitutes is selected first,
+  // then their minutes are influenced by quality.
+  function twoPlayerMinutes(ps,pos){
+    const vals=ps.map(()=>0);
+    const r=Math.random();
+
+    // Much more frequent rotation than 3.2.
+    let n;
+    if(pos=="OB"){
+      n=r<.04?0:r<.28?1:r<.72?2:2;
+    }else{
+      n=r<.01?0:r<.16?1:r<.56?2:3;
+    }
+    n=Math.min(n,ps.length-2);
+
+    const selected=[];
+    for(let i=0;i<n;i++){
+      const sub=ps[i+2];
+      const best=Math.max(quality(ps[0]),quality(ps[1]));
+      const chance=Math.max(.55,Math.min(.99,(pos=="OB"?.88:.93)+(quality(sub)-best)*.025));
+      if(Math.random()<chance)selected.push(i+2);
+    }
+
+    // If the chosen rotation count was >0, strongly favor at least one actual sub.
+    if(n>0 && selected.length===0 && Math.random()<.85) selected.push(2);
+
+    let reserveTotal=0;
+    const reserveMins=[];
+    for(const idx of selected){
+      const sub=ps[idx];
+      const best=Math.max(quality(ps[0]),quality(ps[1]));
+      const gap=quality(sub)-best;
+      let m=pos=="OB"
+        ? 7+Math.floor(Math.random()*15)   // 7–21
+        : 9+Math.floor(Math.random()*17);  // 9–25
+      if(gap>=5)m+=Math.floor(Math.random()*6)+2;
+      if(gap<=-7)m=Math.max(6,m-Math.floor(Math.random()*4));
+      m=Math.min(pos=="OB"?25:29,m);
+      reserveMins.push([idx,m]);
+      reserveTotal+=m;
+    }
+
+    // Make sure there is meaningful bench use when a rotation was selected.
+    if(selected.length && reserveTotal<8){
+      reserveTotal=8;
+      reserveMins[0][1]=8;
+    }
+    reserveTotal=Math.min(reserveTotal,56);
+
+    let left=reserveTotal;
+    reserveMins.forEach(([idx,m],j)=>{
+      const take=j===reserveMins.length-1?left:Math.min(m,left);
+      vals[idx]=take;
+      left-=take;
+    });
+
+    const actualReserve=vals.reduce((sum,v,i)=>sum+(i>=2?v:0),0);
+    const starterTotal=80-actualReserve;
+
+    if(!selected.length){
+      vals[0]=40;vals[1]=40;
+    }else{
+      // Starters normally share the remaining minutes; full 40 is uncommon.
+      let first=Math.round(starterTotal/2+(quality(ps[0])-quality(ps[1]))*.4);
+      first=Math.max(18,Math.min(38,first));
+      let second=starterTotal-first;
+      if(second<18){second=18;first=starterTotal-second;}
+      vals[0]=first;vals[1]=second;
+
+      // Rare full-game appearance, mostly for defenders.
+      if(Math.random()<(pos=="OB"?.08:.012)){
+        const idx=quality(ps[0])>=quality(ps[1])?0:1;
+        const other=idx===0?1:0;
+        const extra=40-vals[idx];
+        if(extra>0 && vals[other]-extra>=18){
+          vals[idx]=40;vals[other]-=extra;
+        }
+      }
+    }
+    return vals;
+  }
+
+  // Goalkeepers remain almost never rotated.
+  {
+    const ps=groups.BR;
+    if(ps.length){
+      if(Math.random()<.035){
+        const m=5+Math.floor(Math.random()*11);
+        S.tm[ps[0][0]].m=40-m;S.tm[ps[1][0]].m=m;
+      }else{
+        S.tm[ps[0][0]].m=40;
+        if(ps[1])S.tm[ps[1][0]].m=0;
+      }
+    }
+  }
+
+  for(const pos of ["OB","SKR"]){
+    const ps=groups[pos];
+    if(ps.length>=2){
+      const vals=twoPlayerMinutes(ps,pos);
+      ps.forEach((p,i)=>S.tm[p[0]].m=vals[i]||0);
+    }
+  }
+
+  // Striker: rotation is now common. Strong substitutes get longer spells.
+  {
+    const ps=groups.NAP;
+    if(ps.length>=2){
+      const starter=ps[0],sub=ps[1];
+      const gap=quality(sub)-quality(starter);
+      const chance=Math.max(.65,Math.min(.97,.82+gap*.03));
+
+      if(Math.random()<chance){
+        let subMin=10+Math.floor(Math.random()*13); // 10–22
+        if(gap>=5)subMin+=Math.floor(Math.random()*7)+2;
+        if(gap<=-7)subMin=Math.max(8,subMin-Math.floor(Math.random()*4));
+        subMin=Math.min(30,subMin);
+        S.tm[starter[0]].m=40-subMin;
+        S.tm[sub[0]].m=subMin;
+      }else{
+        S.tm[starter[0]].m=40;S.tm[sub[0]].m=0;
+      }
+    }else if(ps.length)S.tm[ps[0][0]].m=40;
+  }
+
+  // Exact totals and hard individual cap.
+  for(const pos of ["BR","OB","SKR","NAP"]){
+    const ps=groups[pos],wanted=target[pos];
+    ps.forEach(p=>S.tm[p[0]].m=Math.max(0,Math.min(40,Math.round(S.tm[p[0]].m||0))));
+    let total=ps.reduce((sum,p)=>sum+S.tm[p[0]].m,0);
+    let diff=wanted-total;
+    for(const p of ps){
+      if(!diff)break;
+      const q=S.tm[p[0]];
+      if(diff>0){
+        const add=Math.min(diff,40-q.m);q.m+=add;diff-=add;
+      }else{
+        const sub=Math.min(-diff,q.m);q.m-=sub;diff+=sub;
+      }
+    }
+  }
+}
+
+function simulateBatch(){
+  try{
+    S.run=false; S.finished=false; S.min=40;
+    S.a=0; S.b=0; S.goals=[]; S.ev=[];
+    S.shots=[0,0]; S.xg=[0,0]; S.fouls=[0,0]; S.pens=[0,0];
+    S.penalty={war:null,ber:null};
+
+    // Reset match stats.
+    for(const n in S.tm){
+      const q=S.tm[n];
+      if(!q)continue;
+      q.g=0;q.a=0;q.sh=0;q.x=0;q.pass=0;q.passA=0;q.key=0;
+      q.dr=0;q.drA=0;q.tack=0;q.inter=0;q.turn=0;q.f=0;
+      q.r=6.1+Math.random()*.7;q.m=0;q.cross=0;q.crossA=0;
+      q.injury=null;q.injured=false;q.fatigue=0;
+    }
+
+    // ---------- 1. Team strength ----------
+    function playerQuality(n){
+      const p=nm(n);
+      return p ? p[2] : 70;
+    }
+    function teamStrength(k){
+      const starters=S.tm[k].filter(n=>role(n)!="BR");
+      const br=S.tm[k].find(n=>role(n)=="BR");
+      const field=starters.reduce((z,n)=>z+playerQuality(n),0)/Math.max(1,starters.length);
+      const keeper=br?playerQuality(br):75;
+      return field*.88+keeper*.12;
+    }
+
+    const sw=teamStrength("war"), sb=teamStrength("ber");
+    const strengthDiff=sw-sb;
+
+    // ---------- 2. Score ----------
+    // Hockey-like scoring: mean total ≈ 5 goals, with a long but rare tail.
+    function poisson(lambda){
+      let L=Math.exp(-lambda),p=1,k=0;
+      do{k++;p*=Math.random();}while(p>L && k<15);
+      return k-1;
+    }
+
+    // Skill changes expected goals, but randomness remains meaningful.
+    let lw=2.5*Math.exp(strengthDiff*.035);
+    let lb=2.5*Math.exp(-strengthDiff*.035);
+
+    // Small match-level variance creates occasional 0-0 and 7-5 games.
+    const tempo=.82+Math.random()*.38;
+    lw*=tempo; lb*=tempo;
+
+    S.a=Math.min(9,poisson(lw));
+    S.b=Math.min(9,poisson(lb));
+
+    // Avoid too many sterile games while keeping 0-0 possible.
+    if(S.a+S.b===0 && Math.random()<.72){
+      if(Math.random()<lw/(lw+lb))S.a=1;else S.b=1;
+    }
+
+    // ---------- 3. Shots ----------
+    // Roughly hockey-like volume, independent from the score.
+    const totalShots=Math.max(22,Math.min(48,Math.round(34+(Math.random()-.5)*10)));
+    const shotShare=Math.max(.30,Math.min(.70,.5+strengthDiff*.012));
+    S.shots[0]=Math.round(totalShots*shotShare);
+    S.shots[1]=totalShots-S.shots[0];
+
+    // ---------- 4. Position shot distribution ----------
+    function distributeShots(k,total){
+      const ps={
+        NAP:S.tm[k].filter(n=>role(n)=="NAP"),
+        SKR:S.tm[k].filter(n=>role(n)=="SKR"),
+        OB:S.tm[k].filter(n=>role(n)=="OB")
+      };
+      const shares=[
+        {p:"NAP",v:.40},
+        {p:"SKR",v:.40},
+        {p:"OB",v:.20}
+      ];
+      let rem=total, out=[];
+      shares.forEach((x,i)=>{
+        let v=i===shares.length-1?rem:Math.max(0,Math.round(total*x.v+(Math.random()-.5)*4));
+        v=Math.min(v,rem); rem-=v; out.push([x.p,v]);
+      });
+      // Assign each position's shots according to shooting ability.
+      for(const [pos,count] of out){
+        const arr=ps[pos];
+        if(!arr.length)continue;
+        const weights=arr.map(n=>Math.max(8,(nm(n)[3]?.shot||65))*(playerQuality(n)/80));
+        const sum=weights.reduce((a,b)=>a+b,0);
+        arr.forEach((n,i)=>{
+          const base=count*weights[i]/sum;
+          S.tm[n].sh+=Math.floor(base);
+        });
+        let used=arr.reduce((z,n)=>z+S.tm[n].sh,0);
+        while(used<count){
+          const n=arr[Math.floor(Math.random()*arr.length)];
+          S.tm[n].sh++;used++;
+        }
+      }
+    }
+    distributeShots("war",S.shots[0]);
+    distributeShots("ber",S.shots[1]);
+
+    // ---------- 4b. Minutes before fatigue/injury ----------
+    // The whole-match generator decides the rotation first. This lets fatigue
+    // and injury risk depend on actual playing time.
+    allocateMinutes("war");
+    allocateMinutes("ber");
+
+    // ---------- 5. Fatigue + match injury ----------
+    // About 8-10% of matches have an injury. Fatigue is already encoded by
+    // minutes; the injury source can be overload, contact, or bad luck.
+    const injuryList=[
+      ["stłuczenie uda",1,3,"kontakt"],
+      ["stłuczenie łydki",1,3,"kontakt"],
+      ["stłuczenie biodra",2,5,"kontakt"],
+      ["stłuczenie barku",2,5,"kontakt"],
+      ["skręcenie stawu skokowego",5,14,"kontakt"],
+      ["skręcenie kolana",10,30,"kontakt"],
+      ["naciągnięcie mięśnia uda",5,14,"przeciazenie"],
+      ["naciągnięcie łydki",5,12,"przeciazenie"],
+      ["naciągnięcie pachwiny",7,21,"przeciazenie"],
+      ["uraz mięśnia dwugłowego uda",10,28,"przeciazenie"],
+      ["uraz barku",7,21,"kontakt"],
+      ["uraz nadgarstka",7,21,"kontakt"],
+      ["uraz palca dłoni",3,10,"kontakt"],
+      ["uraz żeber",10,30,"kontakt"],
+      ["wstrząśnienie mózgu",7,21,"kontakt"],
+      ["zerwanie więzadła kolana",60,180,"kontakt"],
+      ["zerwanie Achillesa",180,300,"przeciazenie"],
+      ["poważne uszkodzenie mięśnia",30,90,"przeciazenie"]
+    ];
+
+    function makeInjury(k,n,reason){
+      const pos=role(n);
+      let pool=injuryList.filter(x=>reason=="przeciazenie"?x[3]=="przeciazenie":true);
+      if(pos=="BR") pool=pool.filter(x=>["stłuczenie barku","uraz nadgarstka","uraz palca dłoni","uraz żeber","wstrząśnienie mózgu"].includes(x[0]));
+      if(!pool.length)return false;
+      // Weight short injuries heavily; severe injuries remain very rare.
+      const weights=pool.map(x=>x[2]>=60?.25:x[2]>=30?.7:x[2]>=20?2:5);
+      let r=Math.random()*weights.reduce((a,b)=>a+b,0),ix=0;
+      for(;ix<pool.length;ix++){r-=weights[ix];if(r<=0)break;}
+      const x=pool[Math.min(ix,pool.length-1)];
+      let days=x[1]+Math.floor(Math.random()*(x[2]-x[1]+1));
+      const f=S.tm[n].fatigue||0;
+      if(reason=="przeciazenie" && f>.7)days=Math.min(x[2],days+Math.floor(Math.random()*4));
+      S.tm[n].injury={name:x[0],days,reason};
+      S.tm[n].injured=true;
+      const text=`🩹 ${nm(n)[0]} — ${x[0]} (${days} dni absencji).`;
+      S.ev.push({m:0,t:text,injury:true,team:k});
+      add(`<span class="pen">${text}</span>`);
+      return true;
+    }
+
+    // Fatigue itself makes long-minute players slightly less effective.
+    for(const k of ["war","ber"]){
+      for(const n of S.tm[k]){
+        if(role(n)=="BR")continue;
+        const q=S.tm[n];
+        q.fatigue=Math.max(0,Math.min(1,(q.m-22)/18));
+        q.injured=false;q.injury=null;
+      }
+    }
+
+    // Independent match injury: 8.5% of matches.
+    const fatigueInjuryAlready=S.ev.some(e=>e.injury);
+    if(!fatigueInjuryAlready && Math.random()<.085){
+      const k=Math.random()<.5?"war":"ber";
+      const candidates=S.tm[k].filter(n=>role(n)!="BR");
+      if(candidates.length){
+        // Heavily used players are somewhat more likely to be selected.
+        const weighted=candidates.map(n=>[n,1+(S.tm[n].fatigue||0)*1.8]);
+        let r=Math.random()*weighted.reduce((a,b)=>a+b[1],0),victim=weighted[0][0];
+        for(const z of weighted){r-=z[1];if(r<=0){victim=z[0];break;}}
+        const f=S.tm[victim].fatigue||0;
+        const reason=Math.random()<(.25+.35*f)?"przeciazenie":Math.random()<.7?"kontakt":"losowy";
+        makeInjury(k,victim,reason);
+        // A match injury can shorten the player's minutes; transfer the
+        // lost time to the least-used player of the same position.
+        const lost=Math.min(Math.max(3,Math.floor(4+Math.random()*9)),Math.max(0,S.tm[victim].m-10));
+        if(lost>0){
+          const pos=role(victim);
+          const rec=S.tm[k].filter(n=>role(n)==pos && n!==victim).sort((a,b)=>S.tm[a].m-S.tm[b].m)[0];
+          if(rec){S.tm[victim].m-=lost;S.tm[rec].m=Math.min(40,S.tm[rec].m+lost);}
+        }
+      }
+    }
+
+    // Exact positional totals after any injury-related minute change.
+    for(const k of ["war","ber"]){
+      const targets={BR:40,OB:80,SKR:80,NAP:40};
+      for(const pos of ["BR","OB","SKR","NAP"]){
+        const ps=T[k].p.filter(p=>p[1]==pos);
+        let total=ps.reduce((z,p)=>z+(S.tm[p[0]].m||0),0),diff=targets[pos]-total;
+        for(const p of ps){
+          if(!diff)break;
+          const q=S.tm[p[0]];
+          if(diff>0){const addm=Math.min(diff,40-q.m);q.m+=addm;diff-=addm;}
+          else {const subm=Math.min(-diff,q.m);q.m-=subm;diff+=subm;}
+        }
+      }
+    }
+
+    // ---------- 5. Goals by position and player quality ----------
+    function goalWeights(k){
+      const arr=[];
+      for(const n of S.tm[k]){
+        if(role(n)=="BR")continue;
+        const p=nm(n), q=playerQuality(n), shot=p[3]?.shot||65;
+        let w=q*.35+shot*.65;
+        w*=1-.20*(S.tm[n].fatigue||0);
+        if(role(n)=="NAP")w*=1.18;
+        if(role(n)=="SKR")w*=1.05;
+        if(role(n)=="OB")w*=.62;
+        arr.push([n,Math.max(1,w)]);
+      }
+      return arr;
+    }
+    function weightedPick(arr){
+      let sum=arr.reduce((z,x)=>z+x[1],0),r=Math.random()*sum;
+      for(const x of arr){r-=x[1];if(r<=0)return x[0]}
+      return arr[arr.length-1][0];
+    }
+    function assignGoals(k,count){
+      const arr=goalWeights(k);
+      for(let i=0;i<count;i++){
+        const scorer=weightedPick(arr);
+        S.tm[scorer].g++;
+        // Assist weighted toward players who are not the scorer.
+        if(Math.random()<.62){
+          const candidates=arr.filter(x=>x[0]!==scorer).map(x=>[
+            x[0],x[1]*(1-.22*(S.tm[x[0]].fatigue||0))
+          ]);
+          if(candidates.length){
+            const as=weightedPick(candidates);
+            S.tm[as].a++;
+          }
+        }
+      }
+    }
+    assignGoals("war",S.a);
+    assignGoals("ber",S.b);
+
+    // ---------- 6. Penalties ----------
+    // About one third of matches have a penalty.
+    const hasPenalty=Math.random()<.34;
+    if(hasPenalty){
+      const k=Math.random()<.5?"war":"ber";
+      S.pens[k=="war"?0:1]=1;
+      const takers=S.tm[k].filter(n=>role(n)!="BR");
+      if(takers.length){
+        const taker=weightedPick(takers.map(n=>[n,Math.max(1,(nm(n)[3]?.shot||70))]));
+        const keeper=S.tm[k=="war"?"ber":"war"].find(n=>role(n)=="BR");
+        const finish=(nm(taker)[3]?.shot||70)/100;
+        const save=keeper?(nm(keeper)[3]?.save||80)/100:.8;
+        const scored=Math.random()<Math.max(.55,Math.min(.85,.70+(finish-.7)*.20-(save-.8)*.15));
+        if(scored){
+          // Move one goal to the penalty taker if possible; if team had no goal,
+          // create the penalty goal while preserving a realistic score distribution.
+          if(S.tm[taker].g===0){
+            S.tm[taker].g++;
+            if(S.a+S.b>0){
+              if(k=="war"&&S.a>0){S.a--;}
+              else if(k=="ber"&&S.b>0){S.b--;}
+            }
+          }
+          S.goals.push({min:5+Math.floor(Math.random()*32),team:k,scorer:taker,assist:null,penalty:true});
+        }else{
+          S.ev.push({m:5+Math.floor(Math.random()*32),t:`🎯 RZUT KARNY — ${taker} nie wykorzystuje.`});
+        }
+      }
+    }
+
+    // Fatigued defenders are more error-prone.
+    for(const k of ["war","ber"]){
+      const opp=k=="war"?"ber":"war";
+      for(const n of S.tm[k].filter(n=>role(n)=="OB")){
+        const f=S.tm[n].fatigue||0;
+        if(f>0 && Math.random()<.025+.10*f){
+          S.tm[n].turn++;
+          add(`<span class="pen">⚠️ ${nm(n)[0]} popełnia błąd pod presją zmęczenia.</span>`);
+          if(Math.random()<.12*f){
+            const att=S.tm[opp].filter(n=>role(n)!="BR");
+            if(att.length){
+              const scorer=weightedPick(att.map(n=>[n,1]));
+              if(opp=="war")S.a++;else S.b++;
+              S.tm[scorer].g++;
+            }
+          }
+        }
+      }
+    }
+
+    // ---------- 7. Build goal list ----------
+    for(const k of ["war","ber"]){
+      const goalsFor=S.tm[k].filter(n=>S.tm[n].g>0);
+      let already=S.goals.filter(g=>g.team===k).length;
+      let need=(k=="war"?S.a:S.b)-already;
+      for(const n of goalsFor){
+        let count=Math.min(S.tm[n].g,need);
+        for(let i=0;i<count;i++){
+          S.goals.push({min:1+Math.floor(Math.random()*40),team:k,scorer:n,assist:null,penalty:false});
+        }
+        need-=count;if(need<=0)break;
+      }
+    }
+    S.goals.sort((a,b)=>a.min-b.min);
+
+    // ---------- 8. Player statistics ----------
+    // Populate the individual table from the generated match. This is not a
+    // minute-by-minute simulation: these are coherent whole-match totals.
+    function fillPlayerStats(k){
+      const opp=k=="war"?"ber":"war";
+      const field=S.tm[k].filter(n=>role(n)!="BR");
+      for(const n of field){
+        const q=S.tm[n],pos=role(n),m=Math.max(1,q.m||0),f=q.fatigue||0;
+        const passRate=pos=="OB"?.78:pos=="SKR"?.76:.72;
+        q.pass=Math.max(3,Math.round(m*(.48+Math.random()*.16)));
+        q.passA=Math.max(0,Math.min(q.pass,Math.round(q.pass*(passRate-.06*f))));
+        const drRate=pos=="SKR"?.20:pos=="NAP"?.15:.08;
+        q.dr=Math.max(0,Math.round(m*drRate));
+        q.drA=Math.max(0,Math.min(q.dr,Math.round(q.dr*(.52-.10*f))));
+        q.key=Math.max(0,Math.round(m*(pos=="SKR"?.055:pos=="NAP"?.045:.025)));
+        q.tack=Math.max(0,Math.round(m*(pos=="OB"?.11:pos=="SKR"?.045:.018)));
+        q.inter=Math.max(0,Math.round(m*(pos=="OB"?.075:pos=="SKR"?.025:.012)));
+        q.turn=Math.max(q.turn,Math.round(m*(.025+.035*f)));
+        q.x=Math.max(0,Math.min(3.8,(q.sh||0)*(.045+Math.random()*.04)));
+        if(q.g>0)q.x=Math.max(q.x,q.g*(.55+Math.random()*.4));
+      }
+      const br=S.tm[k].find(n=>role(n)=="BR");
+      if(br){
+        const q=S.tm[br];
+        q.pass=Math.max(4,Math.round(q.m*.35));
+        q.passA=Math.round(q.pass*(.72+Math.random()*.15));
+        q.x=0;q.dr=0;q.drA=0;q.tack=0;q.inter=0;q.key=0;
+        q.turn=Math.round(Math.random()*2);
+      }
+    }
+    fillPlayerStats("war");
+    fillPlayerStats("ber");
+
+    // ---------- 8. Ratings ----------
+    for(const k of ["war","ber"]){
+      for(const n of S.tm[k]){
+        const q=S.tm[n], p=nm(n), base=playerQuality(n);
+        let rating=6.4+(base-75)*.035+(Math.random()-.5)*.55;
+        rating+=q.g*.45+q.a*.18;
+        if(q.sh>0)rating+=(q.g/q.sh)*.7;
+        rating-=.38*(q.fatigue||0);
+        if(q.injured)rating-=.20;
+        rating+=(k=="war"?S.a:S.b)>=(k=="war"?"ber":"war")?0:.0;
+        q.r=Math.max(5.2,Math.min(9.8,rating));
+      }
+    }
+
+    // xG is generated from shots and scoring chances, not forced to equal goals.
+    for(let i=0;i<2;i++){
+      S.xg[i]=Math.max(.6,Math.min(4.5,S.shots[i]*(.055+Math.random()*.025)));
+    }
+
+    S.finished=true;S.run=false;
+    $("sim").disabled=false;
+    $("clock").textContent="KONIEC MECZU";
+    add(`🏁 <b>KONIEC MECZU — ${S.a}:${S.b}</b>`);
+    S.ev.sort((a,b)=>(a.m||0)-(b.m||0));
+    render();
+  }catch(err){
+    console.error("Batch simulation error:",err);
+    S.run=false;S.finished=true;$("sim").disabled=false;
+    $("clock").textContent="Błąd symulacji";render();
+  }
+}
+
+function startMatch(){
+  if(S.run)return;
+  $("sim").disabled=true;
+  simulateBatch();
+}
+
+
+function renderGoals(){
+  const el=document.getElementById("goalfeed");
+  if(!el)return;
+  const goals=Array.isArray(S.goals)?S.goals:[];
+  const penalties=Array.isArray(S.ev)
+    ? S.ev.filter(e=>/RZUT KARNY.*nie wykorzystuje/i.test(e.t)).map(e=>({min:e.m,text:e.t}))
+    : [];
+
+  let html="";
+  for(const k of ["war","ber"]){
+    const list=goals.filter(g=>g.team===k).sort((a,b)=>a.min-b.min);
+    html+=`<div style="margin:6px 0"><b>${T[k].flag} ${T[k].name}</b>`;
+
+    if(list.length){
+      for(const g of list){
+        html+=`<div style="margin-left:8px">${g.min}' — <b>${g.scorer}</b>${g.penalty?' <span class="small">(karny)</span>':g.assist?` <span class="small">(${g.assist})</span>`:""}</div>`;
+      }
+    }else{
+      html+=`<div class="small" style="margin-left:8px">brak goli</div>`;
+    }
+
+    const injuries=(Array.isArray(S.ev)?S.ev:[])
+      .filter(e=>e.injury && e.team===k)
+      .sort((a,b)=>(a.m||0)-(b.m||0));
+    for(const e of injuries){
+      html+=`<div style="margin-left:8px">${e.t}</div>`;
+    }
+
+    const misses=penalties.filter(e=>{
+      const opp=k=="war"?"ber":"war";
+      return e.text.includes(T[opp].name) || e.text.includes("RZUT KARNY");
+    });
+    // Show missed penalties under the team that took them.
+    for(const e of misses){
+      const m=e.text.match(/RZUT KARNY — (.*?) nie wykorzystuje/);
+      if(m)html+=`<div style="margin-left:8px">${e.min}' — <b>${m[1]}</b> <span class="small">(niewykorzystany karny)</span></div>`;
+    }
+    html+=`</div>`;
+  }
+  el.innerHTML=html;
+}
+
+function render(){
+ renderGoals();
+ $("score").textContent=`${S.a} : ${S.b}`;
+ renderGoals();
+ $("clock").textContent=S.min?`${S.min}' — ${S.min<=20?"1. połowa":"2. połowa"}`:"Gotowy";
+ let c=$("content");
+ if(tab=="live")c.innerHTML=`<div class="feed">${S.ev.length?S.ev.map(e=>`<div class="event"><span class="min">${e.m}'</span><span>${e.t}</span></div>`).join(""):"<div class='small'>Kliknij „Symuluj mecz”.</div>"}</div>`;
+ if(tab=="stats")c.innerHTML=`<table><tr><th></th><th>Warsaw</th><th>Berlin</th></tr><tr><td>Strzały</td><td>${S.shots[0]}</td><td>${S.shots[1]}</td></tr><tr><td>Celne</td><td>${Math.round(S.shots[0]*.5)}</td><td>${Math.round(S.shots[1]*.5)}</td></tr><tr><td><b>xG</b></td><td><b>${S.xg[0].toFixed(2)}</b></td><td><b>${S.xg[1].toFixed(2)}</b></td></tr><tr><td>Gole</td><td>${S.a}</td><td>${S.b}</td></tr><tr><td>Faule</td><td>${S.fouls[0]}</td><td>${S.fouls[1]}</td></tr><tr><td>Kary 1 min</td><td>${S.pens[0]}</td><td>${S.pens[1]}</td></tr></table>`;
+ if(tab=="ratings"){
+  const names=["war","ber"];
+  content.innerHTML=names.map(k=>{
+    const team=T[k];
+    const rows=Object.entries(S.tm).filter(([n,v])=>!Array.isArray(v)&&team.p.some(p=>p[0]===n))
+      .sort((a,b)=>b[1].r-a[1].r);
+    return `<h3 style="margin:14px 0 8px">${team.flag} ${team.name}</h3>
+    <div style="overflow-x:auto"><table><tr><th>Zawodnik</th><th>Ocena</th><th>G</th><th>A</th><th>Strz.</th><th>xG</th><th>Pod.</th><th>Kontuzja</th><th>Cel.%</th><th>Klucz.</th><th>Dryb.</th><th>Odb.</th><th>Straty</th></tr>
+    ${rows.map(([n,s])=>`<tr><td>${n}</td><td><b>${s.r.toFixed(1)}</b></td><td>${s.g}</td><td>${s.a}</td><td>${s.sh}</td><td>${s.x.toFixed(2)}</td><td>${s.passA}/${s.pass}</td><td>${s.injury?`🩹 ${s.injury.days}d`:"—"}</td><td>${s.pass?Math.round(s.passA/s.pass*100):"-"}%</td><td>${s.key}</td><td>${s.drA}/${s.dr}</td><td>${s.tack+s.inter}</td><td>${s.turn}</td></tr>`).join("")}</table></div>`;
+  }).join("");
+}
+ if(tab=="minutes"){
+  content.innerHTML=["war","ber"].map(k=>{
+    const team=T[k];
+    const groups={BR:[],OB:[],SKR:[],NAP:[]};
+    team.p.forEach(p=>{
+      if(groups[p[1]]) groups[p[1]].push(p[0]);
+    });
+
+    const labels={BR:"Bramkarze",OB:"Obrońcy",SKR:"Skrzydłowi",NAP:"Napastnicy"};
+    const target={BR:40,OB:80,SKR:80,NAP:40};
+
+    let html=`<h3 style="margin:14px 0 8px">${team.flag} ${team.name}</h3>`;
+
+    for(const pos of ["BR","OB","SKR","NAP"]){
+      const rows=groups[pos].map(n=>[n,S.tm[n]]).sort((a,b)=>(b[1]?.m||0)-(a[1]?.m||0));
+      const total=rows.reduce((sum,[n,v])=>sum+(Number(v?.m)||0),0);
+
+      html+=`<h4 style="margin:12px 0 6px">${labels[pos]} <span class="small">— ${total}' / ${target[pos]}'</span></h4>`;
+      html+=`<table><tr><th>Zawodnik</th><th>Min.</th><th>Ocena</th><th>Kary</th></tr>`;
+
+      html+=rows.map(([n,v])=>`
+        <tr>
+          <td>${n}</td>
+          <td><b>${Math.min(40,Math.max(0,Number(v?.m)||0))}'</b></td>
+          <td>${(v?.r||0).toFixed(1)}</td>
+          <td>${v?.f||0}</td>
+        </tr>`).join("");
+
+      html+=`</table>`;
+    }
+
+    return html;
+  }).join("");
+}
+}
+document.querySelectorAll(".tab").forEach(x=>x.onclick=()=>{document.querySelectorAll(".tab").forEach(y=>y.classList.remove("active"));x.classList.add("active");tab=x.dataset.t;render()});$("sim").onclick=startMatch;$("reset").onclick=reset;reset();
+</script></body></html>
