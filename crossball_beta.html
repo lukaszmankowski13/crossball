@@ -147,7 +147,13 @@ function run(){
 
    state.minute=n;
 
-   simAction();
+   const actions = 3 + Math.floor(Math.random() * 3);
+
+   for(let i=0;i<actions;i++){
+
+      simAction();
+
+   }
 
    render();
 
