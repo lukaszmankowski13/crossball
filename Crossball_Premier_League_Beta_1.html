@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crossball Premier League — Beta</title>
+<style>
+:root{--bg:#080c17;--card:#121a2d;--card2:#18233a;--text:#eef3ff;--muted:#9aa8c2;--accent:#42d3ff;--green:#43d17a;--yellow:#ffcf5c;--line:#293652}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(145deg,#080c17,#10182b);color:var(--text);font:15px system-ui}
+header{padding:20px;position:sticky;top:0;z-index:5;background:#0b1222ee;border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}
+h1{margin:0;font-size:25px} main{max-width:1200px;margin:20px auto;padding:0 14px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px} button,.tab{border:0;border-radius:10px;padding:10px 14px;background:var(--card2);color:var(--text);cursor:pointer;font-weight:700}button.primary,.tab.active{background:var(--accent);color:#06101a}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px} .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-size:12px}
+.match{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;text-align:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.score{font-size:25px;font-weight:900} .team{font-weight:800} .muted,.small{color:var(--muted);font-size:12px}
+.badge{display:inline-block;padding:3px 7px;border-radius:999px;background:var(--card2);font-size:11px;color:var(--muted)}
+.event{padding:7px;border-bottom:1px solid var(--line)} .goal{color:var(--green);font-weight:800} .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:var(--card2);padding:10px;border-radius:10px} .stat b{font-size:20px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>🏆 Crossball Premier League</h1>
+<div class="muted">Testowe rozgrywki • silnik meczu • Beta 1</div>
+</header>
+<main>
+<div class="tabs">
+<button class="tab active" onclick="show('round')">Kolejka</button>
+<button class="tab" onclick="show('table')">Tabela</button>
+<button class="tab" onclick="show('matches')">Wyniki</button>
+<button class="tab" onclick="show('stats')">Statystyki</button>
+</div>
+<div id="app"></div>
+</main>
+<script>
+const TEAMS=[{name:'Wimbledon Club',country:'ENG',rating:86},
+{name:'Cardiff & Met',country:'WAL',rating:82},
+{name:'Surbiton CC',country:'ENG',rating:85},
+{name:'Edinburgh United',country:'SCO',rating:84},
+{name:'Reading HC',country:'ENG',rating:83},
+{name:'Dundee Wanderers',country:'SCO',rating:79},
+{name:'Ealing CBC',country:'ENG',rating:81},
+{name:'Edinburgh HCC',country:'SCO',rating:80},
+{name:'Sutton Coldfield',country:'ENG',rating:78},
+{name:'Leicester City',country:'ENG',rating:77},
+{name:'Durham University',country:'ENG',rating:75},
+{name:'Northampton Saints',country:'ENG',rating:74},
+{name:'Nottingham SC',country:'ENG',rating:73},
+{name:'Herne Bay United',country:'ENG',rating:72}];
+const PLAYERS=[{team:0,name:'Alex Adams',role:'BR',q:80},
+{team:0,name:'Ben Brown',role:'BR',q:87},
+{team:0,name:'Charlie Davies',role:'OB',q:81},
+{team:0,name:'Daniel Fisher',role:'OB',q:88},
+{team:0,name:'Ethan Hughes',role:'OB',q:82},
+{team:0,name:'Finn King',role:'OB',q:89},
+{team:0,name:'George Morgan',role:'SKR',q:83},
+{team:0,name:'Harry Price',role:'SKR',q:90},
+{team:0,name:'Jack Adams',role:'SKR',q:84},
+{team:0,name:'James Brown',role:'SKR',q:91},
+{team:0,name:'Lewis Davies',role:'NAP',q:85},
+{team:0,name:'Max Fisher',role:'NAP',q:92},
+{team:0,name:'Oliver Hughes',role:'NAP',q:86},
+{team:0,name:'Sam King',role:'NAP',q:80},
+{team:1,name:'Daniel Evans',role:'BR',q:79},
+{team:1,name:'Ethan Green',role:'BR',q:86},
+{team:1,name:'Finn Jones',role:'OB',q:80},
+{team:1,name:'George Lewis',role:'OB',q:87},
+{team:1,name:'Harry Parker',role:'OB',q:81},
+{team:1,name:'Jack Taylor',role:'OB',q:88},
+{team:1,name:'James Baker',role:'SKR',q:82},
+{team:1,name:'Lewis Carter',role:'SKR',q:76},
+{team:1,name:'Max Evans',role:'SKR',q:83},
+{team:1,name:'Oliver Green',role:'SKR',q:77},
+{team:1,name:'Sam Jones',role:'NAP',q:84},
+{team:1,name:'Thomas Lewis',role:'NAP',q:78},
+{team:1,name:'William Parker',role:'NAP',q:85},
+{team:1,name:'Alex Taylor',role:'NAP',q:79},
+{team:2,name:'George King',role:'BR',q:85},
+{team:2,name:'Harry Morgan',role:'BR',q:79},
+{team:2,name:'Jack Price',role:'OB',q:86},
+{team:2,name:'James Adams',role:'OB',q:80},
+{team:2,name:'Lewis Brown',role:'OB',q:87},
+{team:2,name:'Max Davies',role:'OB',q:81},
+{team:2,name:'Oliver Fisher',role:'SKR',q:88},
+{team:2,name:'Sam Hughes',role:'SKR',q:82},
+{team:2,name:'Thomas King',role:'SKR',q:89},
+{team:2,name:'William Morgan',role:'SKR',q:83},
+{team:2,name:'Alex Price',role:'NAP',q:90},
+{team:2,name:'Ben Adams',role:'NAP',q:84},
+{team:2,name:'Charlie Brown',role:'NAP',q:91},
+{team:2,name:'Daniel Davies',role:'NAP',q:85},
+{team:3,name:'James Taylor',role:'BR',q:87},
+{team:3,name:'Lewis Baker',role:'BR',q:81},
+{team:3,name:'Max Carter',role:'OB',q:88},
+{team:3,name:'Oliver Evans',role:'OB',q:82},
+{team:3,name:'Sam Green',role:'OB',q:89},
+{team:3,name:'Thomas Jones',role:'OB',q:83},
+{team:3,name:'William Lewis',role:'SKR',q:90},
+{team:3,name:'Alex Parker',role:'SKR',q:84},
+{team:3,name:'Ben Taylor',role:'SKR',q:78},
+{team:3,name:'Charlie Baker',role:'SKR',q:85},
+{team:3,name:'Daniel Carter',role:'NAP',q:79},
+{team:3,name:'Ethan Evans',role:'NAP',q:86},
+{team:3,name:'Finn Green',role:'NAP',q:80},
+{team:3,name:'George Jones',role:'NAP',q:87},
+{team:4,name:'Oliver Davies',role:'BR',q:89},
+{team:4,name:'Sam Fisher',role:'BR',q:83},
+{team:4,name:'Thomas Hughes',role:'OB',q:77},
+{team:4,name:'William King',role:'OB',q:84},
+{team:4,name:'Alex Morgan',role:'OB',q:78},
+{team:4,name:'Ben Price',role:'OB',q:85},
+{team:4,name:'Charlie Adams',role:'SKR',q:79},
+{team:4,name:'Daniel Brown',role:'SKR',q:86},
+{team:4,name:'Ethan Davies',role:'SKR',q:80},
+{team:4,name:'Finn Fisher',role:'SKR',q:87},
+{team:4,name:'George Hughes',role:'NAP',q:81},
+{team:4,name:'Harry King',role:'NAP',q:88},
+{team:4,name:'Jack Morgan',role:'NAP',q:82},
+{team:4,name:'James Price',role:'NAP',q:89},
+{team:5,name:'William Jones',role:'BR',q:75},
+{team:5,name:'Alex Lewis',role:'BR',q:82},
+{team:5,name:'Ben Parker',role:'OB',q:76},
+{team:5,name:'Charlie Taylor',role:'OB',q:83},
+{team:5,name:'Daniel Baker',role:'OB',q:77},
+{team:5,name:'Ethan Carter',role:'OB',q:84},
+{team:5,name:'Finn Evans',role:'SKR',q:78},
+{team:5,name:'George Green',role:'SKR',q:85},
+{team:5,name:'Harry Jones',role:'SKR',q:79},
+{team:5,name:'Jack Lewis',role:'SKR',q:73},
+{team:5,name:'James Parker',role:'NAP',q:80},
+{team:5,name:'Lewis Taylor',role:'NAP',q:74},
+{team:5,name:'Max Baker',role:'NAP',q:81},
+{team:5,name:'Oliver Carter',role:'NAP',q:75},
+{team:6,name:'Charlie Price',role:'BR',q:80},
+{team:6,name:'Daniel Adams',role:'BR',q:87},
+{team:6,name:'Ethan Brown',role:'OB',q:81},
+{team:6,name:'Finn Davies',role:'OB',q:75},
+{team:6,name:'George Fisher',role:'OB',q:82},
+{team:6,name:'Harry Hughes',role:'OB',q:76},
+{team:6,name:'Jack King',role:'SKR',q:83},
+{team:6,name:'James Morgan',role:'SKR',q:77},
+{team:6,name:'Lewis Price',role:'SKR',q:84},
+{team:6,name:'Max Adams',role:'SKR',q:78},
+{team:6,name:'Oliver Brown',role:'NAP',q:85},
+{team:6,name:'Sam Davies',role:'NAP',q:79},
+{team:6,name:'Thomas Fisher',role:'NAP',q:86},
+{team:6,name:'William Hughes',role:'NAP',q:80},
+{team:7,name:'Finn Carter',role:'BR',q:82},
+{team:7,name:'George Evans',role:'BR',q:76},
+{team:7,name:'Harry Green',role:'OB',q:83},
+{team:7,name:'Jack Jones',role:'OB',q:77},
+{team:7,name:'James Lewis',role:'OB',q:84},
+{team:7,name:'Lewis Parker',role:'OB',q:78},
+{team:7,name:'Max Taylor',role:'SKR',q:85},
+{team:7,name:'Oliver Baker',role:'SKR',q:79},
+{team:7,name:'Sam Carter',role:'SKR',q:86},
+{team:7,name:'Thomas Evans',role:'SKR',q:80},
+{team:7,name:'William Green',role:'NAP',q:74},
+{team:7,name:'Alex Jones',role:'NAP',q:81},
+{team:7,name:'Ben Lewis',role:'NAP',q:75},
+{team:7,name:'Charlie Parker',role:'NAP',q:82},
+{team:8,name:'Jack Hughes',role:'BR',q:83},
+{team:8,name:'James King',role:'BR',q:77},
+{team:8,name:'Lewis Morgan',role:'OB',q:84},
+{team:8,name:'Max Price',role:'OB',q:78},
+{team:8,name:'Oliver Adams',role:'OB',q:72},
+{team:8,name:'Sam Brown',role:'OB',q:79},
+{team:8,name:'Thomas Davies',role:'SKR',q:73},
+{team:8,name:'William Fisher',role:'SKR',q:80},
+{team:8,name:'Alex Hughes',role:'SKR',q:74},
+{team:8,name:'Ben King',role:'SKR',q:81},
+{team:8,name:'Charlie Morgan',role:'NAP',q:75},
+{team:8,name:'Daniel Price',role:'NAP',q:82},
+{team:8,name:'Ethan Adams',role:'NAP',q:76},
+{team:8,name:'Finn Brown',role:'NAP',q:83},
+{team:9,name:'Max Parker',role:'BR',q:72},
+{team:9,name:'Oliver Taylor',role:'BR',q:79},
+{team:9,name:'Sam Baker',role:'OB',q:73},
+{team:9,name:'Thomas Carter',role:'OB',q:80},
+{team:9,name:'William Evans',role:'OB',q:74},
+{team:9,name:'Alex Green',role:'OB',q:81},
+{team:9,name:'Ben Jones',role:'SKR',q:75},
+{team:9,name:'Charlie Lewis',role:'SKR',q:82},
+{team:9,name:'Daniel Parker',role:'SKR',q:76},
+{team:9,name:'Ethan Taylor',role:'SKR',q:83},
+{team:9,name:'Finn Baker',role:'NAP',q:77},
+{team:9,name:'George Carter',role:'NAP',q:71},
+{team:9,name:'Harry Evans',role:'NAP',q:78},
+{team:9,name:'Jack Green',role:'NAP',q:72},
+{team:10,name:'Thomas Brown',role:'BR',q:73},
+{team:10,name:'William Davies',role:'BR',q:80},
+{team:10,name:'Alex Fisher',role:'OB',q:74},
+{team:10,name:'Ben Hughes',role:'OB',q:81},
+{team:10,name:'Charlie King',role:'OB',q:75},
+{team:10,name:'Daniel Morgan',role:'OB',q:69},
+{team:10,name:'Ethan Price',role:'SKR',q:76},
+{team:10,name:'Finn Adams',role:'SKR',q:70},
+{team:10,name:'George Brown',role:'SKR',q:77},
+{team:10,name:'Harry Davies',role:'SKR',q:71},
+{team:10,name:'Jack Fisher',role:'NAP',q:78},
+{team:10,name:'James Hughes',role:'NAP',q:72},
+{team:10,name:'Lewis King',role:'NAP',q:79},
+{team:10,name:'Max Morgan',role:'NAP',q:73},
+{team:11,name:'Ben Green',role:'BR',q:75},
+{team:11,name:'Charlie Jones',role:'BR',q:69},
+{team:11,name:'Daniel Lewis',role:'OB',q:76},
+{team:11,name:'Ethan Parker',role:'OB',q:70},
+{team:11,name:'Finn Taylor',role:'OB',q:77},
+{team:11,name:'George Baker',role:'OB',q:71},
+{team:11,name:'Harry Carter',role:'SKR',q:78},
+{team:11,name:'Jack Evans',role:'SKR',q:72},
+{team:11,name:'James Green',role:'SKR',q:79},
+{team:11,name:'Lewis Jones',role:'SKR',q:73},
+{team:11,name:'Max Lewis',role:'NAP',q:80},
+{team:11,name:'Oliver Parker',role:'NAP',q:74},
+{team:11,name:'Sam Taylor',role:'NAP',q:68},
+{team:11,name:'Thomas Baker',role:'NAP',q:75},
+{team:12,name:'Ethan Morgan',role:'BR',q:77},
+{team:12,name:'Finn Price',role:'BR',q:71},
+{team:12,name:'George Adams',role:'OB',q:78},
+{team:12,name:'Harry Brown',role:'OB',q:72},
+{team:12,name:'Jack Davies',role:'OB',q:79},
+{team:12,name:'James Fisher',role:'OB',q:73},
+{team:12,name:'Lewis Hughes',role:'SKR',q:67},
+{team:12,name:'Max King',role:'SKR',q:74},
+{team:12,name:'Oliver Morgan',role:'SKR',q:68},
+{team:12,name:'Sam Price',role:'SKR',q:75},
+{team:12,name:'Thomas Adams',role:'NAP',q:69},
+{team:12,name:'William Brown',role:'NAP',q:76},
+{team:12,name:'Alex Davies',role:'NAP',q:70},
+{team:12,name:'Ben Fisher',role:'NAP',q:77},
+{team:13,name:'Harry Baker',role:'BR',q:66},
+{team:13,name:'Jack Carter',role:'BR',q:73},
+{team:13,name:'James Evans',role:'OB',q:67},
+{team:13,name:'Lewis Green',role:'OB',q:74},
+{team:13,name:'Max Jones',role:'OB',q:68},
+{team:13,name:'Oliver Lewis',role:'OB',q:75},
+{team:13,name:'Sam Parker',role:'SKR',q:69},
+{team:13,name:'Thomas Taylor',role:'SKR',q:76},
+{team:13,name:'William Baker',role:'SKR',q:70},
+{team:13,name:'Alex Carter',role:'SKR',q:77},
+{team:13,name:'Ben Evans',role:'NAP',q:71},
+{team:13,name:'Charlie Green',role:'NAP',q:78},
+{team:13,name:'Daniel Jones',role:'NAP',q:72},
+{team:13,name:'Ethan Lewis',role:'NAP',q:66}];
+const ROUNDS=[[[0,13],[1,12],[2,11],[3,10],[4,9],[5,8],[6,7]],[[12,0],[11,13],[10,1],[9,2],[8,3],[7,4],[6,5]],[[0,11],[12,10],[13,9],[1,8],[2,7],[3,6],[4,5]],[[10,0],[9,11],[8,12],[7,13],[6,1],[5,2],[4,3]],[[0,9],[10,8],[11,7],[12,6],[13,5],[1,4],[2,3]],[[8,0],[7,9],[6,10],[5,11],[4,12],[3,13],[2,1]],[[0,7],[8,6],[9,5],[10,4],[11,3],[12,2],[13,1]],[[6,0],[5,7],[4,8],[3,9],[2,10],[1,11],[13,12]],[[0,5],[6,4],[7,3],[8,2],[9,1],[10,13],[11,12]],[[4,0],[3,5],[2,6],[1,7],[13,8],[12,9],[11,10]],[[0,3],[4,2],[5,1],[6,13],[7,12],[8,11],[9,10]],[[2,0],[1,3],[13,4],[12,5],[11,6],[10,7],[9,8]],[[0,1],[2,13],[3,12],[4,11],[5,10],[6,9],[7,8]]];
+let state={round:0,results:[],last:null};
+
+function standings(){
+ const s=TEAMS.map((t,i)=>({i,pts:0,w:0,d:0,l:0,gf:0,ga:0,sh:0,on:0}));
+ for(const r of state.results){let a=s[r.a],b=s[r.b];a.gf+=r.sa;b.gf+=r.sb;a.sh+=r.asha;b.sh+=r.bsh;a.on+=r.aon;b.on+=r.bon;a.ga+=r.sb;b.ga+=r.sa;
+   if(r.sa>r.sb){a.pts+=3;a.w++;b.l++} else if(r.sa<r.sb){b.pts+=3;b.w++;a.l++} else {a.pts++;b.pts++;a.d++;b.d++;}
+ }
+ return s.sort((a,b)=>b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga) || b.gf-a.gf);
+}
+
+function rand(min,max){return Math.random()*(max-min)+min}
+function poisson(lambda){let L=Math.exp(-lambda),p=1,k=0;do{k++;p*=Math.random()}while(p>L&&k<30);return k-1}
+
+function simulate(a,b){
+ const A=TEAMS[a],B=TEAMS[b];
+ // Same philosophy as the match engine: quality/form/home/discipline/tempo
+ // create attacking activity; shots create goals.
+ const formA=rand(-3,3),formB=rand(-3,3),fatA=rand(-2,2),fatB=rand(-2,2);
+ const home=2.0, tempo=rand(.92,1.12);
+ const perfA=A.rating+formA+fatA+home;
+ const perfB=B.rating+formB+fatB;
+ const swing=rand(-7,7);
+ const attackA=Math.max(0.55,Math.exp((perfA-perfB+swing)*.018))*tempo;
+ const attackB=Math.max(0.55,Math.exp((perfB-perfA-swing)*.018))*tempo;
+ let ash=Math.max(14,Math.min(46,poisson(24*attackA)+10));
+ let bsh=Math.max(14,Math.min(46,poisson(24*attackB)+10));
+ let aOn=0,bOn=0,ag=0,bg=0;
+ const pa=PLAYERS.filter(p=>p.team===a),pb=PLAYERS.filter(p=>p.team===b);
+ const goals=[];
+ function teamShots(ps,shots,team,side){
+   let rem=shots;
+   const weights=ps.map(p=>p.role==='NAP'?2.8:p.role==='SKR'?2.0:.9);
+   for(let i=0;i<shots;i++){const r=Math.random();}
+   for(let i=0;i<shots;i++){
+     let x=Math.random()*weights.reduce((x,y)=>x+y,0),idx=0;
+     for(let j=0;j<weights.length;j++){x-=weights[j];if(x<=0){idx=j;break}}
+     const p=ps[idx];
+     const on=(p.role==='NAP'?.54:p.role==='SKR'?.49:.42)*(1+((p.q-75)*.004));
+     if(Math.random()<on){
+       if(side===0)aOn++;else bOn++;
+       let g=(p.role==='NAP'?.16:p.role==='SKR'?.105:.055)*(1+((p.q-75)*.006));
+       if(Math.random()<Math.max(.025,Math.min(.28,g))){
+         if(side===0)ag++;else bg++;
+         goals.push({team,player:p.name});
+       }
+     }
+   }
+ }
+ teamShots(pa,ash,a,0); teamShots(pb,bsh,b,1);
+ // Penalty: a rare event, one clear result, not a separate phantom stat.
+ const pensA=Math.random()<.12?1:0,pensB=Math.random()<.12?1:0;
+ if(pensA){
+   const p=pa.filter(x=>x.role!=='BR').sort((x,y)=>y.q-x.q)[0];
+   if(Math.random()<.76){ag++;goals.push({team:a,player:p.name,pen:true})}
+ }
+ if(pensB){
+   const p=pb.filter(x=>x.role!=='BR').sort((x,y)=>y.q-x.q)[0];
+   if(Math.random()<.76){bg++;goals.push({team:b,player:p.name,pen:true})}
+ }
+ return {a,b,sa:ag,sb:bg,asha:ash,bsh,aon:aOn,bOn,apens:pensA,bpens:pensB,goals};
+}
+
+function simulateRound(){
+ const games=ROUNDS[state.round].map(([a,b])=>simulate(a,b));
+ state.results.push(...games); state.last=games;
+ state.round++;
+ render();
+}
+
+function show(view){
+ document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+ const btn=[...document.querySelectorAll('.tab')].find(x=>x.textContent.toLowerCase().includes(view==='round'?'kolejka':view==='table'?'tabela':view==='matches'?'wyniki':'statystyki'));
+ if(btn)btn.classList.add('active');
+ if(view==='round')roundView(); if(view==='table')tableView(); if(view==='matches')matchesView(); if(view==='stats')statsView();
+}
+
+function roundView(){
+ if(state.round>=ROUNDS.length){document.getElementById('app').innerHTML='<div class="card"><h2>Sezon zakończony</h2><button class="primary" onclick="show(\'table\')">Pokaż tabelę</button></div>';return}
+ const games=ROUNDS[state.round];
+ document.getElementById('app').innerHTML=`<div class="grid"><div class="card"><h2>Kolejka ${state.round+1} / ${ROUNDS.length}</h2>
+ ${games.map(([a,b])=>`<div class="match"><div class="team">${TEAMS[a].name}</div><div class="badge">vs</div><div class="team">${TEAMS[b].name}</div></div>`).join('')}
+ <button class="primary" onclick="simulateRound()">▶ Symuluj całą kolejkę</button></div>
+ <div class="card"><h2>Stan sezonu</h2><div class="statgrid"><div class="stat"><div class="small">Rozegrane mecze</div><b>${state.results.length}</b></div><div class="stat"><div class="small">Kolejki</div><b>${state.round}/${ROUNDS.length}</b></div></div>
+ <p class="small">Każdą kolejkę symulujesz ręcznie. Wyniki trafiają do tabeli i statystyk.</p></div></div>`;
+}
+function tableView(){
+ const s=standings();
+ document.getElementById('app').innerHTML=`<div class="card"><h2>Tabela</h2><table><tr><th>#</th><th>Drużyna</th><th>M</th><th>PKT</th><th>W</th><th>R</th><th>P</th><th>Bramki</th></tr>${s.map((x,i)=>`<tr><td>${i+1}</td><td><b>${TEAMS[x.i].name}</b></td><td>${x.w+x.d+x.l}</td><td><b>${x.pts}</b></td><td>${x.w}</td><td>${x.d}</td><td>${x.l}</td><td>${x.gf}:${x.ga}</td></tr>`).join('')}</table></div>`;
+}
+function matchesView(){
+ document.getElementById('app').innerHTML=`<div class="card"><h2>Wyniki</h2>${state.results.length?state.results.map((r,i)=>`<div class="match"><div>${TEAMS[r.a].name}</div><div class="score">${r.sa} : ${r.sb}<div class="small">${r.asha}–${r.bsh} strzałów • ${r.aon}–${r.bOn} celnych</div></div><div>${TEAMS[r.b].name}</div></div>`).join(''):'<div class="muted">Brak rozegranych meczów.</div>'}</div>`;
+}
+function statsView(){
+ let g=state.results.reduce((z,r)=>z+r.sa+r.sb,0), sh=state.results.reduce((z,r)=>z+r.asha+r.bsh,0), on=state.results.reduce((z,r)=>z+r.aon+r.bOn,0),p=state.results.reduce((z,r)=>z+r.apens+r.bpens,0);
+ document.getElementById('app').innerHTML=`<div class="card"><h2>Statystyki ligi</h2><div class="statgrid"><div class="stat"><div class="small">Gole</div><b>${g}</b></div><div class="stat"><div class="small">Strzały</div><b>${sh}</b></div><div class="stat"><div class="small">Celne</div><b>${on}</b></div><div class="stat"><div class="small">Rzuty karne</div><b>${p}</b></div></div></div>`;
+}
+function render(){roundView()}
+render();
+</script>
+</body>
+</html>
