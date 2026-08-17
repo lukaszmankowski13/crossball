@@ -78,7 +78,7 @@ function simulate(a,b){
         (x.shoot/75) * (x.stamina/80)
       );
       p.shots++; p.mins+=1;
-      const onChance=(p.role==="NAP"?.54:p.role==="SKR"?.49:p.role==="OB"?.42)*
+      const onChance=(p.role==="NAP"?.54:p.role==="SKR"?.49:.42)*
                     (0.88+p.shoot/700);
       if(Math.random()<onChance){
         p.on++; if(side===0)oa++; else ob++;
