@@ -187,18 +187,168 @@ podstawowy GK kontuzjowany → Defense −1
 </main>
 
 <script>
-function showAlgorithms(){
-  document.getElementById('home').style.display='none';
-  document.getElementById('empty').style.display='none';
-  document.getElementById('algorithms').classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function showEmpty(title){
-  document.getElementById('home').style.display='none';
+function hideAll() {
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('empty').style.display = 'none';
   document.getElementById('algorithms').classList.remove('active');
-  document.getElementById('empty').style.display='block';
-  document.getElementById('emptyTitle').textContent=title;
+
+  const oldTeams = document.getElementById('teams');
+  if (oldTeams) oldTeams.style.display = 'none';
 }
+
+function showAlgorithms() {
+  hideAll();
+  document.getElementById('algorithms').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showEmpty(title) {
+  hideAll();
+  document.getElementById('empty').style.display = 'block';
+  document.getElementById('emptyTitle').textContent = title;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function showTeams() {
+  hideAll();
+
+  let page = document.getElementById('teams');
+
+  if (!page) {
+    page = document.createElement('section');
+    page.id = 'teams';
+    page.className = 'section';
+    page.innerHTML = `
+      <div class="eyebrow">CROSSBALL CHAMPIONSHIP</div>
+      <h1 style="font-size:38px">Drużyny</h1>
+      <p class="lead">
+        Drużyny są pobierane bezpośrednio z bazy Crossball.
+      </p>
+      <div id="team-status" style="color:#9aaab5;margin:20px 0">
+        Ładowanie drużyn...
+      </div>
+      <div id="team-list"></div>
+    `;
+
+    document.querySelector('main').appendChild(page);
+  }
+
+  page.style.display = 'block';
+  loadTeams();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function mediaUrl(path) {
+  return new URL(
+    String(path).replace(/^\\//, ''),
+    document.baseURI
+  ).href;
+}
+
+async function loadTeams() {
+
+  const status = document.getElementById('team-status');
+  const list = document.getElementById('team-list');
+
+  status.textContent = 'Ładowanie drużyn...';
+  list.innerHTML = '';
+
+  try {
+
+    const response = await fetch(
+      'data/crossball-championship/druzyny.json?v=' + Date.now()
+    );
+
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status);
+    }
+
+    const teams = await response.json();
+
+    status.textContent =
+      'Liczba drużyn: ' + teams.length;
+
+    teams.forEach(team => {
+
+      const card = document.createElement('div');
+
+      card.style.cssText = `
+        background:#0b1924;
+        border:1px solid #293b49;
+        border-radius:12px;
+        padding:18px;
+        margin:14px 0;
+        display:flex;
+        align-items:center;
+        gap:18px;
+      `;
+
+      const logo = document.createElement('img');
+
+      logo.src = mediaUrl(team.logo);
+      logo.alt = 'Logo ' + team.team;
+
+      logo.style.cssText = `
+        width:70px;
+        height:70px;
+        object-fit:contain;
+        background:white;
+        border-radius:10px;
+        padding:5px;
+        flex:none;
+      `;
+
+      const info = document.createElement('div');
+
+      info.innerHTML = `
+        <div style="
+          font-size:20px;
+          font-weight:900;
+          margin-bottom:6px;
+        ">
+          ${team.team || 'Bez nazwy'}
+        </div>
+
+        <div style="
+          color:#9aaab5;
+          font-size:14px;
+        ">
+          📍 ${team.city || 'Brak miasta'}
+        </div>
+
+        <div style="margin-top:10px;color:#d7bd83;font-size:13px">
+          ${team.attack !== undefined ? '⚡ Atak: ' + team.attack : ''}
+          ${team.defense !== undefined ? ' &nbsp; 🛡️ Obrona: ' + team.defense : ''}
+        </div>
+      `;
+
+      card.appendChild(logo);
+      card.appendChild(info);
+      list.appendChild(card);
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    status.textContent =
+      'Nie udało się pobrać drużyn. Odśwież stronę.';
+  }
+}
+
+
+/* Zamieniamy dotychczasowe „Składy” na „Drużyny” */
+
+document.querySelectorAll('button').forEach(button => {
+
+  if (button.textContent.trim() === 'Składy') {
+
+    button.textContent = 'Drużyny';
+
+    button.onclick = showTeams;
+  }
+
+});
 </script>
 </body>
 </html>
