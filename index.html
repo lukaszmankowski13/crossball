@@ -1,113 +1,203 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wimbledon Club | Crossball</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crossball</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#06111b;color:#f5f7fa;font-family:Arial,Helvetica,sans-serif}
-.nav{height:74px;background:#030b12;border-bottom:1px solid #263747;display:flex;align-items:center;padding:0 28px;gap:30px}
-.logo{font-size:25px;font-weight:900;letter-spacing:1px;margin-right:25px}.nav a{color:#d9e3ea;text-decoration:none;font-weight:800;font-size:14px;padding:27px 0 23px}.nav a.active{color:#b02a4b;border-bottom:4px solid #b02a4b}.dropdown{position:relative;height:74px;display:flex;align-items:center}.dropdown>a{padding:27px 0 23px}.menu,.submenu2,.submenu3,.submenu4,.submenu5{display:none;position:absolute;background:#07131d;border:1px solid #2d3e4b;min-width:230px;box-shadow:0 12px 30px #0008;z-index:10}.menu{top:72px;left:-10px}.dropdown:hover .menu{display:block}.menu>div,.submenu2>div,.submenu3>div,.submenu4>div,.submenu5>div{padding:12px 15px;color:#d9e3ea;font-size:13px;font-weight:800;position:relative}.menu>div:hover,.submenu2>div:hover,.submenu3>div:hover,.submenu4>div:hover,.submenu5>div:hover{background:#101f2b;color:#b02a4b}.menu>div:nth-child(2):hover .submenu2{display:block}.submenu2{left:100%;top:0}.submenu2>div:nth-child(3):hover .submenu3{display:block}.submenu3{left:100%;top:0}.submenu3>div:hover .submenu4{display:block}.submenu4{left:100%;top:0}.submenu4>div:hover .submenu5{display:block}.submenu5{left:100%;top:0}
-.wrap{max-width:1200px;margin:auto;padding:22px 24px 50px}.crumb{color:#7f91a0;font-size:13px;margin-bottom:16px}
-.hero{border:1px solid #4a2632;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 0 50%,#381524 0,#11151c 32%,#07121b 75%);padding:30px;display:grid;grid-template-columns:280px 1fr 390px;gap:32px;align-items:center}
-.crest{width:250px;height:250px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 5px #0b1822,0 0 0 7px #9d3450}
-h1{font-size:48px;margin:0 0 20px;font-weight:900;letter-spacing:-1px}.meta{display:grid;gap:14px;font-size:17px}.meta b{color:#b02a4b;margin-right:8px}.line{height:1px;background:#7e3045;margin:22px 0}.desc{line-height:1.7;color:#d5dde2;font-size:15px}
-.kits{display:flex;justify-content:center;gap:22px;align-items:center}.kitbox{text-align:center;color:#d7e0e5;font-weight:800;font-size:12px}
-.shirt{width:145px;height:190px;position:relative;margin:auto;filter:drop-shadow(0 12px 10px #0008)}.shirt:before{content:"";position:absolute;inset:15px 25px 0;background:linear-gradient(135deg,#171b21 0 62%,#2b1720 62%);border-radius:22px 22px 10px 10px;border:2px solid #8d3149}.shirt:after{content:"";position:absolute;left:4px;right:4px;top:25px;height:70px;background:#542034;clip-path:polygon(0 0,25% 0,36% 35%,64% 35%,75% 0,100% 0,88% 45%,75% 65%,25% 65%,12% 45%)}.shirt.away:before{background:linear-gradient(135deg,#57233a,#f0ece6 65%);border-color:#8d3149}.shirt .txt{position:absolute;z-index:2;top:92px;left:0;right:0;text-align:center;font-size:14px;color:#fff;font-weight:900}
-.tabs{display:flex;margin-top:18px;border-bottom:1px solid #263747}.tab{padding:18px 28px;font-weight:900;color:#c8d2d9;cursor:pointer}.tab.active{color:#b02a4b;border-bottom:4px solid #b02a4b}
-.panel{border:1px solid #263747;border-top:0;border-radius:0 0 9px 9px;padding:26px;background:#07131d}
-.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}.card{border:1px solid #2d3e4b;border-radius:9px;min-height:210px;padding:22px;text-align:center;background:#091722}.icon{width:58px;height:58px;border:2px solid #b02a4b;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;color:#b02a4b;font-size:26px}.card h3{color:#b02a4b;font-size:14px;margin:0 0 14px}.card .big{font-size:30px;font-weight:900}
-.swatches{display:flex;justify-content:center;gap:12px;margin:15px 0}.sw{width:36px;height:36px;border-radius:50%;border:2px solid #fff}.sw.navy{background:#09253a}.sw.maroon{background:#7d203d}.sw.gold{background:#d1b47b}
-.alg{display:none}.alg.active{display:block}.formula{background:#091722;border:1px solid #2d3e4b;border-radius:10px;padding:20px;margin-bottom:18px}.formula h2{margin:0 0 12px;color:#b02a4b}.formula h3{margin:18px 0 7px;color:#e5edf2;font-size:15px}.formula code{display:block;background:#030b12;border-radius:7px;padding:10px;color:#f1d28e;white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px}.formula table{width:100%;border-collapse:collapse;margin-top:12px}.formula th,.formula td{border-bottom:1px solid #263747;padding:8px;text-align:left;font-size:13px}.formula th{color:#b02a4b}.note{color:#9fb0bc;font-size:13px;line-height:1.6}
-@media(max-width:900px){.hero{grid-template-columns:1fr;text-align:center}.kits{margin-top:10px}.cards{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.nav{gap:12px;padding:0 14px;overflow:auto}.nav a{display:none}.wrap{padding:14px}h1{font-size:32px}.hero{padding:20px}.crest{width:190px;height:190px;margin:auto}.cards{grid-template-columns:1fr}}
+:root{
+  --bg:#07131d;--nav:#030b12;--card:#0b1924;--line:#293b49;
+  --text:#f4f7f9;--muted:#9aaab5;--accent:#b02a4b;--gold:#d7bd83;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{height:72px;background:var(--nav);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 28px;gap:30px;position:sticky;top:0;z-index:20}
+.logo{font-size:25px;font-weight:900;letter-spacing:1px;margin-right:20px;white-space:nowrap}
+nav{display:flex;height:100%;align-items:center;gap:4px}
+.navitem{height:100%;display:flex;align-items:center;position:relative}
+.navbtn{border:0;background:none;color:#d8e1e6;font-weight:800;font-size:14px;padding:0 15px;height:100%;cursor:pointer}
+.navbtn:hover,.navbtn.active{color:#fff;background:#091923}
+.arrow{font-size:10px;margin-left:7px;color:var(--accent)}
+.dropdown{display:none;position:absolute;top:72px;left:0;min-width:250px;background:#07131d;border:1px solid var(--line);box-shadow:0 12px 30px #0008;border-radius:0 0 8px 8px;padding:7px 0}
+.navitem:hover>.dropdown{display:block}
+.dropitem{position:relative}
+.dropbtn{display:flex;width:100%;justify-content:space-between;align-items:center;border:0;background:none;color:#dce5e9;text-decoration:none;padding:13px 17px;text-align:left;font-size:14px;font-weight:700;cursor:pointer}
+.dropbtn:hover{background:#0d202c;color:#fff}
+.subdropdown{display:none;position:absolute;left:100%;top:-7px;min-width:255px;background:#07131d;border:1px solid var(--line);box-shadow:0 12px 30px #0008;border-radius:7px;padding:7px 0}
+.dropitem:hover>.subdropdown{display:block}
+main{max-width:1200px;margin:0 auto;padding:34px 24px 60px}
+.hero{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--accent);font-weight:900;font-size:13px;letter-spacing:2px}
+h1{font-size:52px;margin:10px 0 12px;letter-spacing:-2px}
+.lead{font-size:18px;color:var(--muted);max-width:700px;line-height:1.6}
+.section{margin-top:28px}
+.section h2{font-size:24px;margin:0 0 16px}
+.empty{border:1px dashed #334754;border-radius:10px;padding:45px;text-align:center;color:var(--muted);background:#091722}
+.algorithms{display:none}
+.algorithms.active{display:block}
+.formula{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:18px}
+.formula h2{color:var(--accent);margin:0 0 10px;font-size:20px}
+.formula h3{font-size:14px;margin:18px 0 7px}
+.formula p{color:var(--muted);line-height:1.6}
+code{display:block;background:#030b12;color:var(--gold);padding:11px;border-radius:7px;white-space:pre-wrap;font-family:Consolas,monospace;font-size:13px;line-height:1.5}
+.badge{display:inline-block;border:1px solid #5c3040;color:#e5b1be;padding:4px 8px;border-radius:5px;font-size:11px;font-weight:800}
+@media(max-width:800px){
+ header{padding:0 14px}.logo{font-size:20px;margin-right:5px}nav{gap:0}.navbtn{padding:0 8px;font-size:12px}
+ .dropdown{position:fixed;top:72px;left:10px}.subdropdown{position:static;margin-left:10px;border:0;box-shadow:none}.dropitem:hover>.subdropdown{display:block}
+ h1{font-size:40px}
+}
 </style>
 </head>
 <body>
-<nav class="nav">
-<div class="logo">✕ CROSSBALL</div>
-<a href="#">AKTUALNOŚCI</a><div class="dropdown"><a href="#">ROZGRYWKI ▾</a><div class="menu"><div>Rozgrywki międzynarodowe</div><div class="submenu"><div>Rozgrywki klubowe</div><div class="submenu2"><div>Polska Liga Crossballa</div><div>Europejskie puchary</div><div class="submenu3"><div>Ligi zagraniczne</div><div class="submenu4"><div>Crossball Championship</div><div class="submenu5"><div>Składy</div><div>Terminarz</div><div>Tabela</div></div></div></div></div></div></div></div><a href="#alg">ALGORYTMY</a>
-</nav>
-<main class="wrap">
-<div class="crumb">Strona główna › Drużyny › <span style="color:#b02a4b">Wimbledon Club</span></div>
-<section class="hero">
-<div></div><div><h1>WIMBLEDON CLUB</h1><div class="meta"><div>📍 <b>Miasto:</b> Wimbledon, Anglia</div><div>📅 <b>Założenie:</b> 1854</div><div>👕 <b>Barwy:</b> Granatowy, bordo, biel i złoto</div></div><div class="line"></div><div class="desc">Wimbledon Club to londyński klub Crossball, którego identyfikacja nawiązuje do tradycji i historii klubu.</div></div>
-<div class="kits"><div class="kitbox"><div class="shirt"><span class="txt">WIMBLEDON<br>CLUB</span></div>KOSZULKA DOMOWA</div><div class="kitbox"><div class="shirt away"><span class="txt">WIMBLEDON<br>CLUB</span></div>KOSZULKA WYJAZDOWA</div></div>
-</section>
-<div class="tabs">
-<div class="tab active" onclick="showTab('info',this)">INFORMACJE</div>
-<div class="tab" onclick="showTab('team',this)">DRUŻYNA</div>
-<div class="tab" onclick="showTab('alg',this)">ALGORYTMY</div>
-</div>
-<section id="info" class="panel alg active"><div class="cards">
-<div class="card"><div class="icon">👥</div><h3>ROK ZAŁOŻENIA</h3><div class="big">1854</div></div>
-<div class="card"><div class="icon">●</div><h3>KIBICE</h3><p>Ambitna i rosnąca społeczność</p></div>
-<div class="card"><div class="icon">👕</div><h3>BARWY KLUBU</h3><div class="swatches"><span class="sw navy"></span><span class="sw maroon"></span><span class="sw gold"></span></div></div>
-<div class="card"><h3>KOSZULKA DOMOWA</h3><div class="shirt" style="margin-top:15px"><span class="txt">WIMBLEDON<br>CLUB</span></div></div>
-<div class="card"><h3>KOSZULKA WYJAZDOWA</h3><div class="shirt away" style="margin-top:15px"><span class="txt">WIMBLEDON<br>CLUB</span></div></div>
-</div></section>
-<section id="team" class="panel alg"><div class="formula"><h2>Skład</h2><p class="note">Zakładka drużyny pozostaje miejscem na pełny skład, minuty i role zawodników.</p></div></section>
-<section id="alg" class="panel alg">
-<div class="formula"><h2>🥅 Napastnik — V4</h2><p class="note">Baza 6,75. Gole są najważniejsze, następnie asysty, KP, DefCons − straty i wyniki. Tempo statystyk jest wygaszane przy małej liczbie goli.</p>
-<h3>Gole — liczba</h3><code>+ 0,06 × gole (maks. +1,44)</code>
-<h3>Gole / 100 min</h3><code>+0,35 × min(1, gole/15) × min(1, G/100 ÷ 2,5)</code>
-<h3>Skuteczność</h3><code>+0,005 × (skuteczność − 40), limit −0,15 / +0,15</code>
-<h3>Asysty</h3><code>+0,025 × asysty (maks. +0,50)</code><code>+0,08 × min(1, asysty/8) × min(1, A/100 ÷ 1,5)</code>
-<h3>KP</h3><code>+0,01 × KP (maks. +0,30)</code><code>+0,03 × min(1, KP/20) × min(1, KP/100 ÷ 3)</code>
-<h3>DefCons − straty</h3><code>D=(DefCons−straty)/minuty×100
+
+<header>
+  <div class="logo">✕ CROSSBALL</div>
+  <nav>
+    <div class="navitem">
+      <button class="navbtn" onclick="showEmpty('Aktualności')">AKTUALNOŚCI</button>
+    </div>
+
+    <div class="navitem">
+      <button class="navbtn">ROZGRYWKI <span class="arrow">▼</span></button>
+      <div class="dropdown">
+        <div class="dropitem">
+          <button class="dropbtn" onclick="showEmpty('Rozgrywki międzynarodowe')">Rozgrywki międzynarodowe</button>
+        </div>
+        <div class="dropitem">
+          <button class="dropbtn">Rozgrywki klubowe <span class="arrow">▶</span></button>
+          <div class="subdropdown">
+            <div class="dropitem"><button class="dropbtn" onclick="showEmpty('Polska Liga Crossballa')">Polska Liga Crossballa</button></div>
+            <div class="dropitem"><button class="dropbtn" onclick="showEmpty('Europejskie puchary')">Europejskie puchary</button></div>
+            <div class="dropitem">
+              <button class="dropbtn">Ligi zagraniczne <span class="arrow">▶</span></button>
+              <div class="subdropdown">
+                <div class="dropitem">
+                  <button class="dropbtn">Crossball Championship <span class="arrow">▶</span></button>
+                  <div class="subdropdown">
+                    <div class="dropitem"><button class="dropbtn" onclick="showEmpty('Crossball Championship — Składy')">Składy</button></div>
+                    <div class="dropitem"><button class="dropbtn" onclick="showEmpty('Crossball Championship — Terminarz')">Terminarz</button></div>
+                    <div class="dropitem"><button class="dropbtn" onclick="showEmpty('Crossball Championship — Tabela')">Tabela</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="navitem">
+      <button class="navbtn" onclick="showAlgorithms()">ALGORYTMY</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">CROSSBALL</div>
+    <h1>Świat Crossballa</h1>
+    <p class="lead">Oficjalny serwis fikcyjnych rozgrywek Crossball. Tutaj będziemy rozwijać ligi, drużyny, statystyki i system symulacji.</p>
+  </section>
+
+  <section id="home" class="section">
+    <h2>Strona główna</h2>
+    <div class="empty">Wkrótce pojawią się tutaj najważniejsze informacje.</div>
+  </section>
+
+  <section id="empty" class="section" style="display:none">
+    <h2 id="emptyTitle"></h2>
+    <div class="empty">Ta sekcja jest na razie pusta.</div>
+  </section>
+
+  <section id="algorithms" class="section algorithms">
+    <div class="eyebrow">SYSTEM SYMULACJI</div>
+    <h1 style="font-size:38px">Algorytmy ocen</h1>
+
+    <div class="formula">
+      <h2>🥅 Napastnik — V4</h2><span class="badge">BAZA 6,75</span>
+      <p>Gole są najważniejsze, następnie asysty, KP, DefCons − straty i wyniki.</p>
+      <h3>Gole — liczba</h3><code>+ 0,06 × gole (maks. +1,44)</code>
+      <h3>Gole / 100 min</h3><code>+0,35 × min(1, gole/15) × min(1, G/100 ÷ 2,5)</code>
+      <h3>Skuteczność</h3><code>+0,005 × (skuteczność − 40), limit −0,15 / +0,15</code>
+      <h3>Asysty</h3><code>+0,025 × asysty (maks. +0,50)
++0,08 × min(1, asysty/8) × min(1, A/100 ÷ 1,5)</code>
+      <h3>KP</h3><code>+0,01 × KP (maks. +0,30)
++0,03 × min(1, KP/20) × min(1, KP/100 ÷ 3)</code>
+      <h3>DefCons − straty</h3><code>D=(DefCons−straty)/minuty×100
 +0,015×D, limit −0,30 / +0,30</code>
-<h3>Wyniki</h3><code>R=0,10×[(W+0,5R−P)/mecze] + 0,02×[(pogromy−blamaże)/mecze]</code>
-<h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code></div>
+      <h3>Wyniki</h3><code>R=0,10×[(W+0,5R−P)/mecze] + 0,02×[(pogromy−blamaże)/mecze]</code>
+      <h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code>
+    </div>
 
-<div class="formula"><h2>🏃 Skrzydłowy — V2</h2><p class="note">Największą wagę mają asysty i KP. Gole są ważne, ale mniej niż u napastników. Istotna jest też praca defensywna.</p>
-<h3>Gole</h3><code>+0,045 × gole (maks. +0,90)</code><code>+0,25 × min(1, gole/12) × min(1, G/100 ÷ 2,5)</code>
-<h3>Skuteczność</h3><code>+0,0035 × (skuteczność−40), limit −0,10 / +0,10</code>
-<h3>Asysty</h3><code>+0,04 × asysty (maks. +0,80)</code><code>+0,16 × min(1, asysty/12) × min(1, A/100 ÷ 1,8)</code>
-<h3>KP</h3><code>+0,015 × KP (maks. +0,60)</code><code>+0,07 × min(1, KP/30) × min(1, KP/100 ÷ 4)</code>
-<h3>DefCons − straty</h3><code>D=(DefCons−straty)/minuty×100
+    <div class="formula">
+      <h2>🏃 Skrzydłowy — V2</h2><span class="badge">BAZA 6,75</span>
+      <p>Największe znaczenie mają asysty i KP. Gole są ważne, ale mniej niż u napastników.</p>
+      <h3>Gole</h3><code>+0,045 × gole (maks. +0,90)
++0,25 × min(1, gole/12) × min(1, G/100 ÷ 2,5)</code>
+      <h3>Skuteczność</h3><code>+0,0035 × (skuteczność−40), limit −0,10 / +0,10</code>
+      <h3>Asysty</h3><code>+0,04 × asysty (maks. +0,80)
++0,16 × min(1, asysty/12) × min(1, A/100 ÷ 1,8)</code>
+      <h3>KP</h3><code>+0,015 × KP (maks. +0,60)
++0,07 × min(1, KP/30) × min(1, KP/100 ÷ 4)</code>
+      <h3>DefCons − straty</h3><code>D=(DefCons−straty)/minuty×100
 +0,035×D, limit −0,50 / +0,50</code>
-<h3>Wyniki</h3><code>R=0,10×[(W+0,5R−P)/mecze] + 0,02×[(pogromy−blamaże)/mecze]</code>
-<h3>CS i gole stracone</h3><code>+0,10×(CS/mecze)
-+0,10×(1,5−gole stracone/mecz), z limitem ±0,10</code>
-<h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code></div>
+      <h3>Wyniki</h3><code>R=0,10×[(W+0,5R−P)/mecze] + 0,02×[(pogromy−blamaże)/mecze]</code>
+      <h3>CS i gole stracone</h3><code>+0,10×(CS/mecze)
++0,10×(1,5−gole stracone/mecz), limit ±0,10</code>
+      <h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code>
+    </div>
 
-<div class="formula"><h2>🛡️ Obrońca — V1</h2><p class="note">Priorytetem są DefCons − straty, czyste konta i jakość defensywy drużyny. Ofensywa jest dodatkiem.</p>
-<h3>DefCons − straty</h3><code>D=(DefCons−straty)/minuty×100
+    <div class="formula">
+      <h2>🛡️ Obrońca — V1</h2><span class="badge">BAZA 6,75</span>
+      <p>Priorytetem są DefCons − straty, czyste konta i jakość defensywy drużyny.</p>
+      <h3>DefCons − straty</h3><code>D=(DefCons−straty)/minuty×100
 +0,12×D, limit −0,60 / +0,60</code>
-<h3>Czyste konta</h3><code>+0,60 × (CS/mecze zawodnika)</code>
-<h3>Gole stracone przez drużynę</h3><code>+0,40×(1,5−gole stracone/mecz), limit −0,40 / +0,40</code>
-<h3>Gole / asysty / KP</h3><code>+0,05×gole (maks. +0,50)
+      <h3>Czyste konta</h3><code>+0,60 × (CS/mecze zawodnika)</code>
+      <h3>Gole stracone przez drużynę</h3><code>+0,40×(1,5−gole stracone/mecz), limit −0,40 / +0,40</code>
+      <h3>Gole / asysty / KP</h3><code>+0,05×gole (maks. +0,50)
 +0,035×asysty (maks. +0,35)
 +0,008×KP (maks. +0,20)</code>
-<h3>Wyniki</h3><code>R=0,15×[(W+0,5R−P)/mecze] + 0,03×[(pogromy−blamaże)/mecze]</code>
-<h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code></div>
+      <h3>Wyniki</h3><code>R=0,15×[(W+0,5R−P)/mecze] + 0,03×[(pogromy−blamaże)/mecze]</code>
+      <h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code>
+    </div>
 
-<div class="formula"><h2>🧤 Bramkarz — V1</h2><p class="note">Najważniejsza jest skuteczność interwencji, następnie gole stracone, CS i wyniki.</p>
-<h3>Skuteczność interwencji</h3><code>interwencje=strzały na bramkę−gole stracone
+    <div class="formula">
+      <h2>🧤 Bramkarz — V1</h2><span class="badge">BAZA 6,50</span>
+      <p>Najważniejsza jest skuteczność interwencji, następnie gole stracone, CS i wyniki.</p>
+      <h3>Skuteczność interwencji</h3><code>interwencje=strzały na bramkę−gole stracone
 skuteczność=interwencje/strzały×100
 bonus=(skuteczność−70)×0,025, limit −0,75 / +0,75</code>
-<h3>Gole stracone</h3><code>bonus=(1,00−gole/mecz)×0,50, limit −0,50 / +0,50</code>
-<h3>Czyste konta</h3><code>+0,60×(CS/mecze)</code>
-<h3>Wyniki</h3><code>R=0,15×[(W+0,5R−P)/mecze] + 0,03×[(pogromy−blamaże)/mecze]</code>
-<h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code></div>
+      <h3>Gole stracone</h3><code>bonus=(1,00−gole/mecz)×0,50, limit −0,50 / +0,50</code>
+      <h3>Czyste konta</h3><code>+0,60×(CS/mecze)</code>
+      <h3>Wyniki</h3><code>R=0,15×[(W+0,5R−P)/mecze] + 0,03×[(pogromy−blamaże)/mecze]</code>
+      <h3>Kary</h3><code>−0,03 × liczba kar 2-minutowych</code>
+    </div>
 
-<div class="formula"><h2>🩹 Kontuzje, faule i kary</h2>
-<h3>Faule</h3><code>faule/mecz=(100−średnie posiadanie)/3</code>
-<h3>Kary 2-minutowe</h3><code>kary/mecz=faule/mecz÷20 + gole stracone/mecz÷3</code>
-<h3>Losy kontuzji</h3><code>GK ×1 | obrońca ×2 | skrzydłowy ×4 | napastnik ×4
+    <div class="formula">
+      <h2>🩹 Kontuzje, faule i kary</h2>
+      <h3>Faule</h3><code>faule/mecz=(100−średnie posiadanie)/3</code>
+      <h3>Kary 2-minutowe</h3><code>kary/mecz=faule/mecz÷20 + gole stracone/mecz÷3</code>
+      <h3>Losy kontuzji</h3><code>GK ×1 | obrońca ×2 | skrzydłowy ×4 | napastnik ×4
 ofensywny zawodnik &gt;30 min/mecz: +1 los</code>
-<h3>Osłabienie drużyny</h3><code>2+ ofensywnych, w tym 1 podstawowy → Attack −1
+      <h3>Wpływ kontuzji</h3><code>2+ ofensywnych, w tym 1 podstawowy → Attack −1
 podstawowy GK kontuzjowany → Defense −1
 2+ obrońców, w tym 1 podstawowy → Defense −1</code>
-<p class="note">Kontuzja nie obniża bezpośrednio oceny zawodnika. Wpływa na jego dostępne minuty i okresowo na rating drużyny.</p></div>
-</section>
+    </div>
+  </section>
 </main>
+
 <script>
-function showTab(id,el){
- document.querySelectorAll('.alg').forEach(x=>x.classList.remove('active'));
- document.getElementById(id).classList.add('active');
- document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
- el.classList.add('active');
+function showAlgorithms(){
+  document.getElementById('home').style.display='none';
+  document.getElementById('empty').style.display='none';
+  document.getElementById('algorithms').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showEmpty(title){
+  document.getElementById('home').style.display='none';
+  document.getElementById('algorithms').classList.remove('active');
+  document.getElementById('empty').style.display='block';
+  document.getElementById('emptyTitle').textContent=title;
 }
 </script>
 </body>
