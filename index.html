@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#06111b;color:#f5f7fa;font-family:Arial,Helvetica,sans-serif}
 .nav{height:74px;background:#030b12;border-bottom:1px solid #263747;display:flex;align-items:center;padding:0 28px;gap:30px}
-.logo{font-size:25px;font-weight:900;letter-spacing:1px;margin-right:25px}.nav a{color:#d9e3ea;text-decoration:none;font-weight:800;font-size:14px;padding:27px 0 23px}.nav a.active{color:#b02a4b;border-bottom:4px solid #b02a4b}
+.logo{font-size:25px;font-weight:900;letter-spacing:1px;margin-right:25px}.nav a{color:#d9e3ea;text-decoration:none;font-weight:800;font-size:14px;padding:27px 0 23px}.nav a.active{color:#b02a4b;border-bottom:4px solid #b02a4b}.dropdown{position:relative;height:74px;display:flex;align-items:center}.dropdown>a{padding:27px 0 23px}.menu,.submenu2,.submenu3,.submenu4,.submenu5{display:none;position:absolute;background:#07131d;border:1px solid #2d3e4b;min-width:230px;box-shadow:0 12px 30px #0008;z-index:10}.menu{top:72px;left:-10px}.dropdown:hover .menu{display:block}.menu>div,.submenu2>div,.submenu3>div,.submenu4>div,.submenu5>div{padding:12px 15px;color:#d9e3ea;font-size:13px;font-weight:800;position:relative}.menu>div:hover,.submenu2>div:hover,.submenu3>div:hover,.submenu4>div:hover,.submenu5>div:hover{background:#101f2b;color:#b02a4b}.menu>div:nth-child(2):hover .submenu2{display:block}.submenu2{left:100%;top:0}.submenu2>div:nth-child(3):hover .submenu3{display:block}.submenu3{left:100%;top:0}.submenu3>div:hover .submenu4{display:block}.submenu4{left:100%;top:0}.submenu4>div:hover .submenu5{display:block}.submenu5{left:100%;top:0}
 .wrap{max-width:1200px;margin:auto;padding:22px 24px 50px}.crumb{color:#7f91a0;font-size:13px;margin-bottom:16px}
 .hero{border:1px solid #4a2632;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 0 50%,#381524 0,#11151c 32%,#07121b 75%);padding:30px;display:grid;grid-template-columns:280px 1fr 390px;gap:32px;align-items:center}
 .crest{width:250px;height:250px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 5px #0b1822,0 0 0 7px #9d3450}
@@ -26,7 +26,7 @@ h1{font-size:48px;margin:0 0 20px;font-weight:900;letter-spacing:-1px}.meta{disp
 <body>
 <nav class="nav">
 <div class="logo">✕ CROSSBALL</div>
-<a href="#">AKTUALNOŚCI</a><a href="#">MECZE</a><a href="#">TABELA</a><a class="active" href="#">DRUŻYNY</a><a href="#">STATYSTYKI</a><a href="#">AL GORYTM Y</a><a href="#">O LIDZE</a>
+<a href="#">AKTUALNOŚCI</a><div class="dropdown"><a href="#">ROZGRYWKI ▾</a><div class="menu"><div>Rozgrywki międzynarodowe</div><div class="submenu"><div>Rozgrywki klubowe</div><div class="submenu2"><div>Polska Liga Crossballa</div><div>Europejskie puchary</div><div class="submenu3"><div>Ligi zagraniczne</div><div class="submenu4"><div>Crossball Championship</div><div class="submenu5"><div>Składy</div><div>Terminarz</div><div>Tabela</div></div></div></div></div></div></div></div><a href="#alg">ALGORYTMY</a>
 </nav>
 <main class="wrap">
 <div class="crumb">Strona główna › Drużyny › <span style="color:#b02a4b">Wimbledon Club</span></div>
