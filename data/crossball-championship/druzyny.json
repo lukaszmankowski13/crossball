@@ -32,5 +32,10 @@
   {
     "team": "Leicester City H&CB Club",
     "city": "Leicester"
+  },
+  {
+    "team": "London Wayfarers",
+    "logo": "/media/19FFB766-C9CA-4368-84FD-FACC95ACF556-1.png",
+    "city": "Londyn"
   }
 ]
