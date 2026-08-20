@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Crossball</title>
 
 <style>
@@ -59,7 +60,7 @@ button:hover {
     position: absolute;
     top: 100%;
     left: 0;
-    min-width: 240px;
+    min-width: 250px;
     background: #07131d;
     border: 1px solid #293b49;
     border-radius: 7px;
@@ -92,6 +93,14 @@ main {
     padding: 45px 25px;
 }
 
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
 .hero {
     padding-bottom: 30px;
     border-bottom: 1px solid #293b49;
@@ -117,16 +126,29 @@ main {
     background: #091722;
 }
 
-.page {
-    display: none;
+.news-card {
+    background: #0b1924;
+    border: 1px solid #293b49;
+    border-radius: 10px;
+    padding: 22px;
+    margin: 20px 0;
 }
 
-.page.active {
-    display: block;
+.news-card h2 {
+    margin-top: 0;
+    margin-bottom: 8px;
 }
 
-.page h1 {
-    font-size: 38px;
+.news-meta {
+    color: #9aaab5;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.news-content {
+    color: #e4e9ed;
+    line-height: 1.7;
+    white-space: pre-wrap;
 }
 
 .algorithm {
@@ -138,7 +160,7 @@ main {
 }
 
 .algorithm h2 {
-    color: #b02a4b;
+    color: #d7bd83;
     margin-top: 0;
 }
 
@@ -228,14 +250,10 @@ ROZGRYWKI ▼
 
 <div class="dropdown">
 
-<!-- ROZGRYWKI MIĘDZYNARODOWE -->
-
 <button onclick="showPage('miedzynarodowe')">
 Rozgrywki międzynarodowe
 </button>
 
-
-<!-- ROZGRYWKI KLUBOWE -->
 
 <div class="menu">
 
@@ -254,8 +272,6 @@ Europejskie puchary
 </button>
 
 
-<!-- LIGI ZAGRANICZNE -->
-
 <div class="menu">
 
 <button>
@@ -263,8 +279,6 @@ Ligi zagraniczne ▶
 </button>
 
 <div class="dropdown">
-
-<!-- CROSSBALL CHAMPIONSHIP -->
 
 <div class="menu">
 
@@ -320,7 +334,7 @@ ALGORYTMY
 <h1>Świat Crossballa</h1>
 
 <p>
-Oficjalny serwis Crossball. 
+Oficjalny serwis Crossball.
 Tutaj będziemy rozwijać ligi, drużyny,
 statystyki i system symulacji.
 </p>
@@ -328,47 +342,90 @@ statystyki i system symulacji.
 </div>
 
 <div class="empty">
-Pozostałe sekcje serwisu są jeszcze puste.
+Wybierz sekcję z menu.
 </div>
 
 </section>
 
 
-<!-- PUSTE STRONY -->
+<!-- AKTUALNOŚCI -->
 
 <section id="aktualnosci" class="page">
+
 <h1>Aktualności</h1>
-<div class="empty">Brak aktualności.</div>
+
+<div id="news-list">
+<div class="empty">Ładowanie aktualności...</div>
+</div>
+
 </section>
+
+
+<!-- PUSTE SEKCJE -->
 
 <section id="miedzynarodowe" class="page">
+
 <h1>Rozgrywki międzynarodowe</h1>
-<div class="empty">Sekcja w przygotowaniu.</div>
+
+<div class="empty">
+Sekcja w przygotowaniu.
+</div>
+
 </section>
+
 
 <section id="polska" class="page">
+
 <h1>Polska Liga Crossballa</h1>
-<div class="empty">Sekcja w przygotowaniu.</div>
+
+<div class="empty">
+Sekcja w przygotowaniu.
+</div>
+
 </section>
+
 
 <section id="puchary" class="page">
+
 <h1>Europejskie puchary</h1>
-<div class="empty">Sekcja w przygotowaniu.</div>
+
+<div class="empty">
+Sekcja w przygotowaniu.
+</div>
+
 </section>
+
 
 <section id="cc-sklady" class="page">
+
 <h1>Crossball Championship — Składy</h1>
-<div class="empty">Sekcja w przygotowaniu.</div>
+
+<div class="empty">
+Sekcja w przygotowaniu.
+</div>
+
 </section>
+
 
 <section id="cc-terminarz" class="page">
+
 <h1>Crossball Championship — Terminarz</h1>
-<div class="empty">Sekcja w przygotowaniu.</div>
+
+<div class="empty">
+Sekcja w przygotowaniu.
+</div>
+
 </section>
 
+
 <section id="cc-tabela" class="page">
+
 <h1>Crossball Championship — Tabela</h1>
-<div class="empty">Sekcja w przygotowaniu.</div>
+
+<div class="empty">
+Sekcja w przygotowaniu.
+</div>
+
 </section>
 
 
@@ -389,8 +446,10 @@ Pozostałe sekcje serwisu są jeszcze puste.
 
 <h3>Gole — liczba</h3>
 
-<code>+ 0,06 × gole
-maksymalnie +1,44</code>
+<code>
++ 0,06 × gole
+maksymalnie +1,44
+</code>
 
 <h3>Gole / 100 minut</h3>
 
@@ -671,31 +730,41 @@ faule/mecz ÷ 20
 gole stracone/mecz ÷ 3
 </code>
 
-<h3>Losy kontuzji</h3>
+<h3>Wpływ kar na ocenę</h3>
 
 <code>
-Bramkarz ×1
-Obrońca ×2
-Skrzydłowy ×4
-Napastnik ×4
-
-Ofensywny zawodnik planowany
-na >30 min/mecz → +1 los
+−0,03 za każdą karę 2-minutową
 </code>
 
-<h3>Wpływ kontuzji na drużynę</h3>
+<h3>Kontuzje</h3>
+
+<code>
+60 kontuzji na całą ligę.
+
+Losowanie:
+bramkarze — 1 los
+obrońcy — 2 losy
+skrzydłowi — 4 losy
+napastnicy — 4 losy
+
+Ofensywny zawodnik
+powyżej 30 min/mecz
+otrzymuje dodatkowy los.
+</code>
+
+<h3>Osłabienie drużyny przez kontuzje</h3>
 
 <code>
 2+ ofensywnych,
 w tym 1 podstawowy
-→ Attack −1
+→ −1 ATK
 
-Podstawowy bramkarz kontuzjowany
-→ Defense −1
+Podstawowy bramkarz
+→ −1 DEF
 
 2+ obrońców,
 w tym 1 podstawowy
-→ Defense −1
+→ −1 DEF
 </code>
 
 </div>
@@ -707,19 +776,191 @@ w tym 1 podstawowy
 
 <script>
 
+/* =========================
+   NAWIGACJA
+========================= */
+
 function showPage(pageId) {
 
     document.querySelectorAll(".page").forEach(function(page) {
         page.classList.remove("active");
     });
 
-    document.getElementById(pageId).classList.add("active");
+    const page = document.getElementById(pageId);
+
+    if (page) {
+        page.classList.add("active");
+    }
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
 }
+
+
+/* =========================
+   AKTUALNOŚCI Z PAGES CMS
+========================= */
+
+async function loadNews() {
+
+    const container = document.getElementById("news-list");
+
+    try {
+
+        const response = await fetch(
+            "https://api.github.com/repos/lukaszmankowski13/crossball/contents/content/aktualnosci"
+        );
+
+        if (!response.ok) {
+            throw new Error("Nie udało się pobrać aktualności.");
+        }
+
+        const files = await response.json();
+
+        const markdownFiles = files
+            .filter(file => file.name.endsWith(".md"))
+            .sort((a, b) => b.name.localeCompare(a.name));
+
+        if (markdownFiles.length === 0) {
+
+            container.innerHTML =
+                '<div class="empty">Brak aktualności.</div>';
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        for (const file of markdownFiles) {
+
+            const rawResponse = await fetch(file.download_url);
+
+            const text = await rawResponse.text();
+
+            const parsed = parseMarkdownNews(text);
+
+            const card = document.createElement("article");
+
+            card.className = "news-card";
+
+            card.innerHTML = `
+                <h2>${escapeHTML(parsed.title)}</h2>
+
+                <div class="news-meta">
+                    ${escapeHTML(parsed.date)}
+                    ${parsed.category ? " • " + escapeHTML(parsed.category) : ""}
+                </div>
+
+                <div class="news-content">
+                    ${escapeHTML(parsed.body)}
+                </div>
+            `;
+
+            container.appendChild(card);
+        }
+
+    } catch (error) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Nie udało się pobrać aktualności.
+                <br><br>
+                Spróbuj ponownie za chwilę.
+            </div>
+        `;
+
+        console.error(error);
+    }
+}
+
+
+/* =========================
+   ODCZYT FRONT MATTER
+========================= */
+
+function parseMarkdownNews(text) {
+
+    let title = "Aktualność";
+    let date = "";
+    let category = "";
+    let body = text;
+
+    if (text.startsWith("---")) {
+
+        const end = text.indexOf("---", 3);
+
+        if (end !== -1) {
+
+            const frontMatter =
+                text.substring(3, end).trim();
+
+            body =
+                text.substring(end + 3).trim();
+
+            frontMatter.split("\n").forEach(function(line) {
+
+                const separator = line.indexOf(":");
+
+                if (separator === -1) return;
+
+                const key =
+                    line.substring(0, separator).trim();
+
+                const value =
+                    line.substring(separator + 1).trim();
+
+                if (key === "title") {
+                    title = value;
+                }
+
+                if (key === "date") {
+                    date = value;
+                }
+
+                if (key === "category") {
+                    category = value;
+                }
+
+            });
+
+        }
+
+    }
+
+    return {
+        title: title,
+        date: date,
+        category: category,
+        body: body
+    };
+
+}
+
+
+/* =========================
+   BEZPIECZNE WYŚWIETLANIE
+========================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+loadNews();
 
 </script>
 
