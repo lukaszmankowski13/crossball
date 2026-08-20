@@ -1,0 +1,241 @@
+media:
+  input: media
+  output: /media
+
+content:
+
+  - name: aktualnosci
+    label: Aktualności
+    type: collection
+    path: content/aktualnosci
+    filename: "{year}-{month}-{day}-{primary}.md"
+    view:
+      primary: title
+      fields: [title, date, category]
+      sort: date
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: Tytuł
+        type: string
+        required: true
+
+      - name: date
+        label: Data
+        type: date
+        required: true
+
+      - name: category
+        label: Kategoria
+        type: select
+        options:
+          values:
+            - Aktualności
+            - Polska Liga Crossballa
+            - Europejskie puchary
+            - Ligi zagraniczne
+            - Crossball Championship
+
+      - name: image
+        label: Zdjęcie
+        type: image
+
+      - name: body
+        label: Treść
+        type: rich-text
+        required: true
+
+
+  - name: rozgrywki
+    label: Rozgrywki
+    type: group
+
+    items:
+
+      - name: polska
+        label: Polska Liga Crossballa
+        type: group
+
+        items:
+
+          - name: polska-terminarz
+            label: Terminarz
+            type: file
+            path: data/polska/terminarz.json
+            format: json
+            list: true
+            fields:
+              - name: date
+                label: Data
+                type: date
+              - name: home
+                label: Gospodarz
+                type: string
+              - name: away
+                label: Goście
+                type: string
+              - name: home_score
+                label: Gole gospodarzy
+                type: number
+              - name: away_score
+                label: Gole gości
+                type: number
+
+          - name: polska-tabela
+            label: Tabela
+            type: file
+            path: data/polska/tabela.json
+            format: json
+            list: true
+            fields:
+              - name: team
+                label: Drużyna
+                type: string
+              - name: played
+                label: Mecze
+                type: number
+              - name: wins
+                label: Zwycięstwa
+                type: number
+              - name: draws
+                label: Remisy
+                type: number
+              - name: losses
+                label: Porażki
+                type: number
+              - name: points
+                label: Punkty
+                type: number
+
+
+      - name: europejskie-puchary
+        label: Europejskie puchary
+        type: group
+
+        items:
+
+          - name: europejskie-terminarz
+            label: Terminarz
+            type: file
+            path: data/europe/terminarz.json
+            format: json
+            list: true
+            fields:
+              - name: date
+                label: Data
+                type: date
+              - name: home
+                label: Gospodarz
+                type: string
+              - name: away
+                label: Goście
+                type: string
+              - name: home_score
+                label: Gole gospodarzy
+                type: number
+              - name: away_score
+                label: Gole gości
+                type: number
+
+
+      - name: ligi-zagraniczne
+        label: Ligi zagraniczne
+        type: group
+
+        items:
+
+          - name: crossball-championship
+            label: Crossball Championship
+            type: group
+
+            items:
+
+              - name: sklady
+                label: Składy
+                type: file
+                path: data/crossball-championship/sklady.json
+                format: json
+                list: true
+                fields:
+                  - name: team
+                    label: Drużyna
+                    type: string
+                  - name: player
+                    label: Zawodnik
+                    type: string
+                  - name: position
+                    label: Pozycja
+                    type: select
+                    options:
+                      values:
+                        - Bramkarz
+                        - Obrońca
+                        - Skrzydłowy
+                        - Napastnik
+                  - name: rating
+                    label: Rating
+                    type: number
+
+              - name: terminarz
+                label: Terminarz
+                type: file
+                path: data/crossball-championship/terminarz.json
+                format: json
+                list: true
+                fields:
+                  - name: date
+                    label: Data
+                    type: date
+                  - name: home
+                    label: Gospodarz
+                    type: string
+                  - name: away
+                    label: Goście
+                    type: string
+                  - name: home_score
+                    label: Gole gospodarzy
+                    type: number
+                  - name: away_score
+                    label: Gole gości
+                    type: number
+
+              - name: tabela
+                label: Tabela
+                type: file
+                path: data/crossball-championship/tabela.json
+                format: json
+                list: true
+                fields:
+                  - name: team
+                    label: Drużyna
+                    type: string
+                  - name: played
+                    label: Mecze
+                    type: number
+                  - name: wins
+                    label: Zwycięstwa
+                    type: number
+                  - name: draws
+                    label: Remisy
+                    type: number
+                  - name: losses
+                    label: Porażki
+                    type: number
+                  - name: goals_for
+                    label: Gole strzelone
+                    type: number
+                  - name: goals_against
+                    label: Gole stracone
+                    type: number
+                  - name: points
+                    label: Punkty
+                    type: number
+
+
+  - name: algorytmy
+    label: Algorytmy
+    type: file
+    path: data/algorytmy.md
+    format: raw
