@@ -1,1 +1,727 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crossball</title>
 
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #07131d;
+    color: #f4f7f9;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+header {
+    background: #030b12;
+    border-bottom: 1px solid #293b49;
+    padding: 20px 25px;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+nav {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+button {
+    background: #0b1924;
+    color: #f4f7f9;
+    border: 1px solid #293b49;
+    padding: 12px 16px;
+    border-radius: 7px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #122635;
+}
+
+.menu {
+    position: relative;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 240px;
+    background: #07131d;
+    border: 1px solid #293b49;
+    border-radius: 7px;
+    padding: 6px;
+    z-index: 100;
+}
+
+.menu:hover > .dropdown {
+    display: block;
+}
+
+.dropdown .menu {
+    display: block;
+}
+
+.dropdown button {
+    width: 100%;
+    text-align: left;
+    margin: 2px 0;
+}
+
+.dropdown .dropdown {
+    left: 100%;
+    top: 0;
+}
+
+main {
+    max-width: 1150px;
+    margin: auto;
+    padding: 45px 25px;
+}
+
+.hero {
+    padding-bottom: 30px;
+    border-bottom: 1px solid #293b49;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin: 10px 0;
+}
+
+.hero p {
+    color: #9aaab5;
+    font-size: 18px;
+}
+
+.empty {
+    margin-top: 25px;
+    padding: 45px;
+    text-align: center;
+    border: 1px dashed #405461;
+    border-radius: 10px;
+    color: #9aaab5;
+    background: #091722;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.page h1 {
+    font-size: 38px;
+}
+
+.algorithm {
+    background: #0b1924;
+    border: 1px solid #293b49;
+    border-radius: 10px;
+    padding: 22px;
+    margin: 20px 0;
+}
+
+.algorithm h2 {
+    color: #b02a4b;
+    margin-top: 0;
+}
+
+.algorithm h3 {
+    margin-top: 20px;
+    font-size: 15px;
+}
+
+code {
+    display: block;
+    background: #030b12;
+    color: #d7bd83;
+    padding: 12px;
+    border-radius: 7px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    font-family: Consolas, monospace;
+}
+
+@media (max-width: 700px) {
+
+    header {
+        padding: 16px;
+    }
+
+    .logo {
+        font-size: 22px;
+    }
+
+    nav {
+        display: block;
+    }
+
+    nav > * {
+        margin-bottom: 6px;
+    }
+
+    nav button {
+        width: 100%;
+        text-align: left;
+    }
+
+    .dropdown {
+        position: static;
+        margin-left: 10px;
+        margin-top: 5px;
+    }
+
+    .dropdown .dropdown {
+        position: static;
+        margin-left: 10px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    main {
+        padding: 30px 16px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">✕ CROSSBALL</div>
+
+<nav>
+
+<!-- AKTUALNOŚCI -->
+
+<button onclick="showPage('aktualnosci')">
+AKTUALNOŚCI
+</button>
+
+
+<!-- ROZGRYWKI -->
+
+<div class="menu">
+
+<button>
+ROZGRYWKI ▼
+</button>
+
+<div class="dropdown">
+
+<!-- ROZGRYWKI MIĘDZYNARODOWE -->
+
+<button onclick="showPage('miedzynarodowe')">
+Rozgrywki międzynarodowe
+</button>
+
+
+<!-- ROZGRYWKI KLUBOWE -->
+
+<div class="menu">
+
+<button>
+Rozgrywki klubowe ▶
+</button>
+
+<div class="dropdown">
+
+<button onclick="showPage('polska')">
+Polska Liga Crossballa
+</button>
+
+<button onclick="showPage('puchary')">
+Europejskie puchary
+</button>
+
+
+<!-- LIGI ZAGRANICZNE -->
+
+<div class="menu">
+
+<button>
+Ligi zagraniczne ▶
+</button>
+
+<div class="dropdown">
+
+<!-- CROSSBALL CHAMPIONSHIP -->
+
+<div class="menu">
+
+<button>
+Crossball Championship ▶
+</button>
+
+<div class="dropdown">
+
+<button onclick="showPage('cc-sklady')">
+Składy
+</button>
+
+<button onclick="showPage('cc-terminarz')">
+Terminarz
+</button>
+
+<button onclick="showPage('cc-tabela')">
+Tabela
+</button>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+
+
+<!-- ALGORYTMY -->
+
+<button onclick="showPage('algorytmy')">
+ALGORYTMY
+</button>
+
+</nav>
+</header>
+
+
+<main>
+
+<!-- STRONA GŁÓWNA -->
+
+<section id="home" class="page active">
+
+<div class="hero">
+
+<h1>Świat Crossballa</h1>
+
+<p>
+Oficjalny serwis Crossball. 
+Tutaj będziemy rozwijać ligi, drużyny,
+statystyki i system symulacji.
+</p>
+
+</div>
+
+<div class="empty">
+Pozostałe sekcje serwisu są jeszcze puste.
+</div>
+
+</section>
+
+
+<!-- PUSTE STRONY -->
+
+<section id="aktualnosci" class="page">
+<h1>Aktualności</h1>
+<div class="empty">Brak aktualności.</div>
+</section>
+
+<section id="miedzynarodowe" class="page">
+<h1>Rozgrywki międzynarodowe</h1>
+<div class="empty">Sekcja w przygotowaniu.</div>
+</section>
+
+<section id="polska" class="page">
+<h1>Polska Liga Crossballa</h1>
+<div class="empty">Sekcja w przygotowaniu.</div>
+</section>
+
+<section id="puchary" class="page">
+<h1>Europejskie puchary</h1>
+<div class="empty">Sekcja w przygotowaniu.</div>
+</section>
+
+<section id="cc-sklady" class="page">
+<h1>Crossball Championship — Składy</h1>
+<div class="empty">Sekcja w przygotowaniu.</div>
+</section>
+
+<section id="cc-terminarz" class="page">
+<h1>Crossball Championship — Terminarz</h1>
+<div class="empty">Sekcja w przygotowaniu.</div>
+</section>
+
+<section id="cc-tabela" class="page">
+<h1>Crossball Championship — Tabela</h1>
+<div class="empty">Sekcja w przygotowaniu.</div>
+</section>
+
+
+<!-- ALGORYTMY -->
+
+<section id="algorytmy" class="page">
+
+<h1>Algorytmy ocen</h1>
+
+
+<div class="algorithm">
+
+<h2>🥅 Napastnik — V4</h2>
+
+<h3>Baza</h3>
+
+<code>6,75</code>
+
+<h3>Gole — liczba</h3>
+
+<code>+ 0,06 × gole
+maksymalnie +1,44</code>
+
+<h3>Gole / 100 minut</h3>
+
+<code>
++0,35 × min(1, gole/15)
+× min(1, G/100 ÷ 2,5)
+</code>
+
+<h3>Skuteczność</h3>
+
+<code>
++0,005 × (skuteczność − 40)
+limit −0,15 / +0,15
+</code>
+
+<h3>Asysty</h3>
+
+<code>
++0,025 × asysty
+maksymalnie +0,50
+
++0,08 × min(1, asysty/8)
+× min(1, A/100 ÷ 1,5)
+</code>
+
+<h3>Kluczowe podania</h3>
+
+<code>
++0,01 × KP
+maksymalnie +0,30
+
++0,03 × min(1, KP/20)
+× min(1, KP/100 ÷ 3)
+</code>
+
+<h3>DefCons − straty</h3>
+
+<code>
+D = (DefCons − straty) / minuty × 100
+
++0,015 × D
+limit −0,30 / +0,30
+</code>
+
+<h3>Wyniki zespołu</h3>
+
+<code>
+R = 0,10 × [(W + 0,5R − P) / mecze]
+
++0,02 × [(pogromy − blamaże) / mecze]
+</code>
+
+<h3>Kary</h3>
+
+<code>
+−0,03 × liczba kar 2-minutowych
+</code>
+
+</div>
+
+
+<div class="algorithm">
+
+<h2>🏃 Skrzydłowy — V2</h2>
+
+<h3>Baza</h3>
+
+<code>6,75</code>
+
+<h3>Gole</h3>
+
+<code>
++0,045 × gole
+maksymalnie +0,90
+
++ bonus za tempo goli
+</code>
+
+<h3>Skuteczność</h3>
+
+<code>
++0,0035 × (skuteczność − 40)
+limit −0,10 / +0,10
+</code>
+
+<h3>Asysty</h3>
+
+<code>
++0,04 × asysty
+maksymalnie +0,80
+
++ bonus za tempo asyst
+</code>
+
+<h3>Kluczowe podania</h3>
+
+<code>
++0,015 × KP
+maksymalnie +0,60
+
++ bonus za tempo KP
+</code>
+
+<h3>DefCons − straty</h3>
+
+<code>
+D = (DefCons − straty) / minuty × 100
+
++0,035 × D
+limit −0,50 / +0,50
+</code>
+
+<h3>CS i gole stracone</h3>
+
+<code>
++0,10 × (CS / mecze)
+
++0,10 × (1,5 − gole stracone/mecz)
+limit ±0,10
+</code>
+
+<h3>Wyniki</h3>
+
+<code>
+R = 0,10 × [(W + 0,5R − P) / mecze]
+
++0,02 × [(pogromy − blamaże) / mecze]
+</code>
+
+<h3>Kary</h3>
+
+<code>
+−0,03 × liczba kar 2-minutowych
+</code>
+
+</div>
+
+
+<div class="algorithm">
+
+<h2>🛡️ Obrońca — V1</h2>
+
+<h3>Baza</h3>
+
+<code>6,75</code>
+
+<h3>DefCons − straty</h3>
+
+<code>
+D = (DefCons − straty) / minuty × 100
+
++0,12 × D
+limit −0,60 / +0,60
+</code>
+
+<h3>Czyste konta</h3>
+
+<code>
++0,60 × (CS / mecze zawodnika)
+</code>
+
+<h3>Gole stracone przez drużynę</h3>
+
+<code>
++0,40 × (1,5 − gole stracone/mecz)
+limit −0,40 / +0,40
+</code>
+
+<h3>Gole</h3>
+
+<code>
++0,05 × gole
+maksymalnie +0,50
+</code>
+
+<h3>Asysty</h3>
+
+<code>
++0,035 × asysty
+maksymalnie +0,35
+</code>
+
+<h3>Kluczowe podania</h3>
+
+<code>
++0,008 × KP
+maksymalnie +0,20
+</code>
+
+<h3>Wyniki</h3>
+
+<code>
+R = 0,15 × [(W + 0,5R − P) / mecze]
+
++0,03 × [(pogromy − blamaże) / mecze]
+</code>
+
+<h3>Kary</h3>
+
+<code>
+−0,03 × liczba kar 2-minutowych
+</code>
+
+</div>
+
+
+<div class="algorithm">
+
+<h2>🧤 Bramkarz — V1</h2>
+
+<h3>Baza</h3>
+
+<code>6,50</code>
+
+<h3>Skuteczność interwencji</h3>
+
+<code>
+interwencje =
+strzały na bramkę − gole stracone
+
+skuteczność =
+interwencje / strzały × 100
+
+bonus =
+(sk skuteczność − 70) × 0,025
+
+limit −0,75 / +0,75
+</code>
+
+<h3>Gole stracone</h3>
+
+<code>
+(1,00 − gole/mecz) × 0,50
+
+limit −0,50 / +0,50
+</code>
+
+<h3>Czyste konta</h3>
+
+<code>
++0,60 × (CS / mecze)
+</code>
+
+<h3>Wyniki</h3>
+
+<code>
+R = 0,15 × [(W + 0,5R − P) / mecze]
+
++0,03 × [(pogromy − blamaże) / mecze]
+</code>
+
+<h3>Kary</h3>
+
+<code>
+−0,03 × liczba kar 2-minutowych
+</code>
+
+</div>
+
+
+<div class="algorithm">
+
+<h2>🩹 Faule, kary i kontuzje</h2>
+
+<h3>Faule</h3>
+
+<code>
+faule/mecz =
+(100 − średnie posiadanie) / 3
+</code>
+
+<h3>Kary 2-minutowe</h3>
+
+<code>
+kary/mecz =
+faule/mecz ÷ 20
++
+gole stracone/mecz ÷ 3
+</code>
+
+<h3>Losy kontuzji</h3>
+
+<code>
+Bramkarz ×1
+Obrońca ×2
+Skrzydłowy ×4
+Napastnik ×4
+
+Ofensywny zawodnik planowany
+na >30 min/mecz → +1 los
+</code>
+
+<h3>Wpływ kontuzji na drużynę</h3>
+
+<code>
+2+ ofensywnych,
+w tym 1 podstawowy
+→ Attack −1
+
+Podstawowy bramkarz kontuzjowany
+→ Defense −1
+
+2+ obrońców,
+w tym 1 podstawowy
+→ Defense −1
+</code>
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+function showPage(pageId) {
+
+    document.querySelectorAll(".page").forEach(function(page) {
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageId).classList.add("active");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+</script>
+
+</body>
+</html>
