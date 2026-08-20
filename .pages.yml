@@ -151,7 +151,29 @@ content:
             type: group
 
             items:
-
+              - name: druzyny
+                label: Drużyny
+                type: file
+                path: data/crossball-championship/druzyny.json
+                format: json
+                list: true
+                fields:
+                  - name: team
+                    label: Nazwa drużyny
+                    type: string
+                    required: true
+                  - name: logo
+                    label: Logo
+                    type: image
+                  - name: city
+                    label: Miasto
+                    type: string
+                  - name: attack
+                    label: Atak
+                    type: number
+                  - name: defense
+                    label: Obrona
+                    type: number
               - name: sklady
                 label: Składy
                 type: file
